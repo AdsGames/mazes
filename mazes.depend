@@ -1,0 +1,28 @@
+# depslib dependency file v1.0
+1396139487 source:e:\allans programming\games indev\mazes\button.cpp
+	"button.h"
+
+1396136878 e:\allans programming\games indev\mazes\button.h
+	<allegro.h>
+	<string>
+	<time.h>
+
+1398127801 source:e:\allans programming\games indev\mazes\main.cpp
+	<allegro.h>
+	<alpng.h>
+	<string>
+	<fstream>
+	<sstream>
+	<math.h>
+	<iostream>
+	"rapidxml.hpp"
+	"rapidxml_print.hpp"
+	"fmod/fmod.h"
+	"fmod/fmod_errors.h"
+	"button.h"
+	"id.h"
+
+1366484954 e:\allans programming\games indev\mazes\id.h
+
+1396112531 source:e:\allans programming\games indev\mazes\resources.rc
+

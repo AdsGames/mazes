@@ -1,0 +1,62 @@
+  __  __                    
+ |  \/  | __ _ _______  ___ 
+ | |\/| |/ _` |_  / _ \/ __|
+ | |  | | (_| |/ /  __/\__ \
+ |_|  |_|\__,_/___\___||___/
+
+Allan Legemaate, Allan Daniel Software
+--------------------------
+Adsgames 2012
+Changelog:
+--------------------------
+
+Version 4.1
+--------------
+*Added controller support
+*Controller buttons in help menu
+*Fixed small bugs
+*Static linked libgcc and libstdc++ dlls (there gone now!)
+
+Version 4.0
+--------------
+*Icometric mode
+*1280x960 resolution
+*New level selector
+*New icon
+*Many graphics updated
+*Robot ai improved
+*Bug fixes and Improvments!
+
+Version 3.0
+--------------
+*Background changed
+*Winscreen changed
+*Level captions recentered
+*Hurt sound changed
+*Level 2 slightly changed
+*New level
+*Amplified trash sfx
+*Corrected broom get sound plays even after you have it
+*F to restart level
+*Organized game folder
+*Intro now has the A.D.S. Games new logo.
+*Intro image changed
+
+Version 2.0
+--------------
+*Intro screen fade added.
+*Intro screen edited
+*Menu transitions
+*New level added
+*Help screen rewritten
+*Win screen
+*New secret block
+*P to pause
+*R to restart game
+
+Version 1.0
+--------------
+*Game Released
+
+Visit us at www.adsgames.net
+Contact us at contact@adsgames.net
