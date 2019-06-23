@@ -13,29 +13,44 @@
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-Wall" />
 					<Add option="-g" />
 				</Compiler>
-				<Linker>
-					<Add option="-lalpng" />
-					<Add option="-lalleg" />
-					<Add option="-lfmod" />
-					<Add option="-static-libgcc" />
-					<Add option="-static-libstdc++" />
-				</Linker>
 			</Target>
 		</Build>
+		<Compiler>
+			<Add option="-Wnon-virtual-dtor" />
+			<Add option="-Winit-self" />
+			<Add option="-Wredundant-decls" />
+			<Add option="-Wcast-align" />
+			<Add option="-Wundef" />
+			<Add option="-Wfloat-equal" />
+			<Add option="-Winline" />
+			<Add option="-Wunreachable-code" />
+			<Add option="-Wmissing-include-dirs" />
+			<Add option="-Wswitch-enum" />
+			<Add option="-Wswitch-default" />
+			<Add option="-Wzero-as-null-pointer-constant" />
+			<Add option="-Wmain" />
+			<Add option="-pedantic" />
+			<Add option="-Wextra" />
+			<Add option="-Wall" />
+			<Add option="-std=c++14" />
+			<Add directory="include" />
+		</Compiler>
 		<Linker>
-			<Add library="alleg" />
-			<Add library="fmod" />
+			<Add option="-lloadpng" />
+			<Add option="-llogg" />
+			<Add option="-lalleg44" />
 		</Linker>
-		<Unit filename="button.cpp" />
-		<Unit filename="button.h" />
-		<Unit filename="id.h" />
-		<Unit filename="main.cpp" />
-		<Unit filename="resources.rc">
+		<Unit filename="include/block.h" />
+		<Unit filename="include/button.h" />
+		<Unit filename="include/id.h" />
+		<Unit filename="res/resources.rc">
 			<Option compilerVar="WINDRES" />
 		</Unit>
+		<Unit filename="src/block.cpp" />
+		<Unit filename="src/button.cpp" />
+		<Unit filename="src/main.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
