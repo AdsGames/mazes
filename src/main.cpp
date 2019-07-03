@@ -8,6 +8,8 @@
 #include <loadpng.h>
 #include <logg.h>
 
+#include <regex>
+#include <iostream>
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -25,9 +27,6 @@ Button help;
 Button quit;
 Button mode;
 Button back;
-
-//Fonts
-FONT *f1, *f2, *f3, *f4, *f5;
 
 // Menu
 int selectorY, selectorX, newSelectorY, selected_object;
@@ -59,32 +58,7 @@ std::string levelText;
 std::string finalFile;
 
 //Main Map
-int map[24][32] = {
-  {5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5}
-};
+int map[24][32] = {0};
 
 //Define bitmaps
 BITMAP *buffer;
@@ -142,28 +116,13 @@ struct tile {
   int value;
   int type;
   int dir;
-} tiles[24][32];
+};
 
-//Convert int to string
-std::string convertInt (int number) {
-  std::stringstream ss;
-  ss << number;
-  return ss.str();
-}
-
-//Checks if file exists
-bool fexists (const char *filename) {
-  std::ifstream ifile (filename);
-  return !ifile.fail();
-}
+tile tiles[24][32];
 
 //Collision
 bool collision (int xMin1, int xMax1, int xMin2, int xMax2, int yMin1, int yMax1, int yMin2, int yMax2) {
-  if (xMin1 < xMax2 && yMin1 < yMax2 && xMin2 < xMax1 && yMin2 < yMax1) {
-    return true;
-  }
-
-  return false;
+  return (xMin1 < xMax2 && yMin1 < yMax2 && xMin2 < xMax1 && yMin2 < yMax1);
 }
 
 void highcolor_fade_in (BITMAP *bmp_orig, int speed) {
@@ -326,24 +285,11 @@ void setupGame (bool first) {
     currentTime = clock();
 
     // Sets Font
-    f1 = load_font ("fonts/arial_black.pcx", nullptr, nullptr);
-    f2 = extract_font_range (f1, ' ', 'A' - 1);
-    f3 = extract_font_range (f1, 'A', 'Z');
-    f4 = extract_font_range (f1, 'Z' + 1, 'z');
-
-    // Merge fonts
-    font = merge_fonts (f4, f5 = merge_fonts (f2, f3));
-
-    // Destroy temporary fonts
-    destroy_font (f1);
-    destroy_font (f2);
-    destroy_font (f3);
-    destroy_font (f4);
-    destroy_font (f5);
+    font = load_font ("fonts/arial_black.pcx", nullptr, nullptr);
   }
 
   // Background Music
-  play_sample (song, 255, 128, 1000, 1);
+  //play_sample (song, 255, 128, 1000, 1);
 }
 
 
@@ -426,23 +372,48 @@ void resetBlocks (int newI, int newT) {
 
 //Controls Character Movements
 void charactermove() {
+  int delta_x = 0;
+  int delta_y = 0;
+  int map_x = x / 40;
+  int map_y = y / 40;
+
   if (key[KEY_UP] || key[KEY_W] || joy[0].stick[0].axis[1].d1) {
     characterRotation = 128;
+    delta_y = -1;
+  }
+  else if (key[KEY_DOWN] || key[KEY_S] || joy[0].stick[0].axis[1].d2) {
+    characterRotation = 0;
+    delta_y = 1;
+  }
+  else if (key[KEY_LEFT] || key[KEY_A] || joy[0].stick[0].axis[0].d1) {
+    characterRotation = 64;
+    delta_x = -1;
+  }
+  else if (key[KEY_RIGHT] || key[KEY_D] || joy[0].stick[0].axis[0].d2) {
+    characterRotation = 192;
+    delta_x = 1;
+  }
 
-    if (tiles[y / 40 - 1][x / 40].type == AIR) {
-      y -= 40;
+  if (delta_x != 0 || delta_y != 0) {
+    tile *tile_at_pos = &tiles[map_y + delta_y][map_x + delta_x];
+    tile *tile_behind_pos = &tiles[map_y + delta_y * 2][map_x + delta_x * 2];
+
+    if (tile_at_pos -> type == AIR) {
+      y += delta_y * 40;
+      x += delta_x * 40;
     }
-    else if (tiles[y / 40 - 1][x / 40].type == SOLID && tiles[y / 40 - 1][x / 40].value != 7 && tiles[y / 40 - 1][x / 40].value != 9 && tiles[y / 40 - 1][x / 40].value != 3) {
+    else if (tile_at_pos -> type == SOLID && tile_at_pos -> value != 7 && tile_at_pos -> value != 9 && tile_at_pos -> value != 3) {
       play_sample (hitwall, 255, 122, 1000, 0);
     }
-    else if (tiles[y / 40 - 1][x / 40].type == PUSHABLE && tiles[y / 40 - 2][x / 40].type == AIR) {
-      play_sample (boxslide, 255, 122, 1000, 0);
-      tiles[y / 40 - 2][x / 40].value = tiles[y / 40 - 1][x / 40].value;
-      tiles[y / 40 - 1][x / 40].value = 0;
-      y -= 40;
-    }
-    else if (tiles[y / 40 - 1][x / 40].type == PUSHABLE && tiles[y / 40 - 2][x / 40].type != AIR) {
-      if (tiles[y / 40 - 2][x / 40].type == ENEMY) {
+    else if (tile_at_pos -> type == PUSHABLE) {
+      if (tile_behind_pos -> type == AIR) {
+        play_sample (boxslide, 255, 122, 1000, 0);
+        tiles[y / 40 - 2][x / 40].value = tiles[y / 40 - 1][x / 40].value;
+        tiles[y / 40 - 1][x / 40].value = 0;
+        y += delta_y * 40;
+        x += delta_x * 40;
+      }
+      else if (tile_behind_pos -> type == ENEMY) {
         play_sample (explode, 255, 122, 1000, 0);
         tiles[y / 40 - 2][x / 40].value = 3;
         score += 100;
@@ -451,203 +422,29 @@ void charactermove() {
         play_sample (boxhitwall, 255, 122, 1000, 0);
       }
     }
-    else if (key[KEY_SPACE] && tiles[y / 40 - 1][x / 40].value == 3 && haveBroom) {
-      if (tiles[y / 40 - 2][x / 40].type == AIR) {
-        tiles[y / 40 - 2][x / 40].value = tiles[y / 40 - 1][x / 40].value;
-        tiles[y / 40 - 1][x / 40].value = 0;
+    else if (key[KEY_SPACE] && tile_at_pos -> value == 3 && haveBroom) {
+      if (tile_behind_pos -> type == AIR) {
+        tile_behind_pos -> value = tile_at_pos -> value;
+        tile_at_pos -> value = 0;
       }
-      else if (tiles[y / 40 - 2][x / 40].value == 6) {
+      else if (tile_behind_pos -> value == 6) {
         score += 50;
-
-        if (robotsLeft > 0) {
-          robotsLeft -= 1;
-        }
-
+        robotsLeft -= (robotsLeft > 0);
         play_sample (trash, 255, 122, 1000, 0);
-        tiles[y / 40 - 1][x / 40].value = 0;
+        tile_at_pos -> value = 0;
       }
 
       play_sample (sweep, 1000, 122, 1000, 0);
     }
     else if (tiles[y / 40 - 1][x / 40].value == 7) {
       if (!haveBroom) {
-        tiles[y / 40 - 1][x / 40].value = 9;
+        tile_at_pos -> value = 9;
         play_sample (door, 255, 122, 1000, 0);
         haveBroom = true;
       }
     }
-    else if (tiles[y / 40 - 1][x / 40].value == 9) {
-      if (robotsLeft == 0) {
-        doneLevel = 1;
-      }
-    }
-  }
-
-
-  if (key[KEY_DOWN] || key[KEY_S] || joy[0].stick[0].axis[1].d2) {
-    characterRotation = 0;
-
-    if (tiles[y / 40 + 1][x / 40].value == 0 || tiles[y / 40 + 1][x / 40].value == 8) {
-      y = y + 40;
-    }
-    else if (tiles[y / 40 + 1][x / 40].value == 5) {
-      play_sample (hitwall, 255, 122, 1000, 0);
-    }
-    else if (tiles[y / 40 + 1][x / 40].value == 2 && tiles[y / 40 + 2][x / 40].value == 0) {
-      play_sample (boxslide, 255, 122, 1000, 0);
-      tiles[y / 40 + 1][x / 40].value = 0;
-      tiles[y / 40 + 2][x / 40].value = 2;
-      y = y + 40;
-    }
-    else if (tiles[y / 40 + 1][x / 40].value == 2 && tiles[y / 40 + 2][x / 40].value != 0) {
-      if (tiles[y / 40 + 1][x / 40].value == 2 && tiles[y / 40 + 2][x / 40].value == 1) {
-        play_sample (explode, 255, 122, 1000, 0);
-        tiles[y / 40 + 2][x / 40].value = 3;
-        score += 100;
-      }
-      else {
-        play_sample (boxhitwall, 255, 122, 1000, 0);
-      }
-    }
-    else if (tiles[y / 40 + 1][x / 40].value == 3 && tiles[y / 40 + 2][x / 40].value == 0 && haveBroom == 1 && (key[KEY_SPACE] || joy[0].button[0].b)) {
-      tiles[y / 40 + 1][x / 40].value = 0;
-      tiles[y / 40 + 2][x / 40].value = 3;
-      play_sample (sweep, 1000, 122, 1000, 0);
-    }
-    else if (tiles[y / 40 + 1][x / 40].value == 3 && tiles[y / 40 + 2][x / 40].value == 6 && haveBroom == 1 && (key[KEY_SPACE] || joy[0].button[0].b)) {
-      tiles[y / 40 + 1][x / 40].value = 0;
-      score += 50;
-
-      if (robotsLeft > 0) {
-        robotsLeft -= 1;
-      }
-
-      play_sample (sweep, 1000, 122, 1000, 0);
-      play_sample (trash, 255, 122, 1000, 0);
-    }
-    else if (tiles[y / 40 + 1][x / 40].value == 7) {
-      if (!haveBroom) {
-        tiles[y / 40 + 1][x / 40].value = 9;
-        play_sample (door, 255, 122, 1000, 0);
-        haveBroom = true;
-      }
-    }
-    else if (tiles[y / 40 + 1][x / 40].value == 9) {
-      if (robotsLeft == 0) {
-        doneLevel = 1;
-      }
-    }
-  }
-
-
-  if (key[KEY_LEFT] || key[KEY_A] || joy[0].stick[0].axis[0].d1) {
-    characterRotation = 64;
-
-    if (tiles[y / 40][x / 40 - 1].value == 0 || tiles[y / 40][x / 40 - 1].value == 8) {
-      x = x - 40;
-    }
-    else if (tiles[y / 40][x / 40 - 1].value == 5) {
-      play_sample (hitwall, 255, 122, 1000, 0);
-    }
-    else if (tiles[y / 40][x / 40 - 1].value == 2 && tiles[y / 40][x / 40 - 2].value == 0) {
-      play_sample (boxslide, 255, 122, 1000, 0);
-      tiles[y / 40][x / 40 - 1].value = 0;
-      tiles[y / 40][x / 40 - 2].value = 2;
-      x = x - 40;
-    }
-    else if (tiles[y / 40][x / 40 - 1].value == 2 && tiles[y / 40][x / 40 - 2].value != 0) {
-      if (tiles[y / 40][x / 40 - 1].value == 2 && tiles[y / 40][x / 40 - 2].value == 1) {
-        play_sample (explode, 255, 122, 1000, 0);
-        tiles[y / 40][x / 40 - 2].value = 3;
-        score += 100;
-      }
-      else {
-        play_sample (boxhitwall, 255, 122, 1000, 0);
-      }
-    }
-    else if (tiles[y / 40][x / 40 - 1].value == 3 && tiles[y / 40][x / 40 - 2].value == 0 && haveBroom == 1 && (key[KEY_SPACE] || joy[0].button[0].b)) {
-      tiles[y / 40][x / 40 - 1].value = 0;
-      tiles[y / 40][x / 40 - 2].value = 3;
-      play_sample (sweep, 1000, 122, 1000, 0);
-    }
-    else if (tiles[y / 40][x / 40 - 1].value == 3 && tiles[y / 40][x / 40 - 2].value == 6 && haveBroom == 1 && (key[KEY_SPACE] || joy[0].button[0].b)) {
-      tiles[y / 40][x / 40 - 1].value = 0;
-      score += 50;
-
-      if (robotsLeft > 0) {
-        robotsLeft -= 1;
-      }
-
-      play_sample (sweep, 1000, 122, 1000, 0);
-      play_sample (trash, 255, 122, 1000, 0);
-    }
-    else if (tiles[y / 40][x / 40 - 1].value == 7) {
-      if (!haveBroom) {
-        tiles[y / 40][x / 40 - 1].value = 9;
-        play_sample (door, 255, 122, 1000, 0);
-        haveBroom = true;
-      }
-    }
-    else if (tiles[y / 40][x / 40 - 1].value == 9) {
-      if (robotsLeft == 0) {
-        doneLevel = 1;
-      }
-    }
-  }
-
-
-  if (key[KEY_RIGHT] || key[KEY_D] || joy[0].stick[0].axis[0].d2) {
-    characterRotation = 192;
-
-    if (tiles[y / 40][x / 40 + 1].value == 0 || tiles[y / 40][x / 40 + 1].value == 8) {
-      x = x + 40;
-    }
-    else if (tiles[y / 40][x / 40 + 1].value == 5) {
-      play_sample (hitwall, 255, 122, 1000, 0);
-    }
-    else if (tiles[y / 40][x / 40 + 1].value == 2 && tiles[y / 40][x / 40 + 2].value == 0) {
-      play_sample (boxslide, 255, 122, 1000, 0);
-      tiles[y / 40][x / 40 + 1].value = 0;
-      tiles[y / 40][x / 40 + 2].value = 2;
-      x = x + 40;
-    }
-    else if (tiles[y / 40][x / 40 + 1].value == 2 && tiles[y / 40][x / 40 + 2].value != 0) {
-      if (tiles[y / 40][x / 40 + 1].value == 2 && tiles[y / 40][x / 40 + 2].value == 1) {
-        play_sample (explode, 255, 122, 1000, 0);
-        tiles[y / 40][x / 40 + 2].value = 3;
-        score += 100;
-      }
-      else {
-        play_sample (boxhitwall, 255, 122, 1000, 0);
-      }
-    }
-    else if (tiles[y / 40][x / 40 + 1].value == 3 && tiles[y / 40][x / 40 + 2].value == 0 && haveBroom == 1 && (key[KEY_SPACE] || joy[0].button[0].b)) {
-      tiles[y / 40][x / 40 + 1].value = 0;
-      tiles[y / 40][x / 40 + 2].value = 3;
-      play_sample (sweep, 1000, 122, 1000, 0);
-    }
-    else if (tiles[y / 40][x / 40 + 1].value == 3 && tiles[y / 40][x / 40 + 2].value == 6 &&  haveBroom == 1 && (key[KEY_SPACE] || joy[0].button[0].b)) {
-      tiles[y / 40][x / 40 + 1].value = 0;
-      score += 50;
-
-      if (robotsLeft > 0) {
-        robotsLeft -= 1;
-      }
-
-      play_sample (sweep, 1000, 122, 1000, 0);
-      play_sample (trash, 255, 122, 1000, 0);
-    }
-    else if (tiles[y / 40][x / 40 + 1].value == 7) {
-      if (!haveBroom) {
-        play_sample (door, 255, 122, 1000, 0);
-        haveBroom = 1;
-        tiles[y / 40][x / 40 + 1].value = 9;
-      }
-    }
-    else if (tiles[y / 40][x / 40 + 1].value == 9) {
-      if (robotsLeft == 0) {
-        doneLevel = 1;
-      }
+    else if (tile_at_pos -> value == 9) {
+      doneLevel = (robotsLeft == 0);
     }
   }
 
@@ -656,61 +453,54 @@ void charactermove() {
 
 //Change tiles
 void changeMap() {
-  finalFile = "levels/level" + convertInt (currentLevel) + ".map";
+  finalFile = "levels/level" + std::to_string (currentLevel) + ".map";
 
   doneLevel = 0;
   haveBroom = 0;
   x = 40;
   y = 40;
 
-  if (currentLevel == 1) {
-    robotsLeft = 3;
-    levelText = "Welcome to the maze";
-  }
-  else if (currentLevel == 2) {
-    robotsLeft = 6;
-    levelText = "Boxed in";
-  }
-  else if (currentLevel == 3) {
-    robotsLeft = 6;
-    levelText = "Rooms";
-  }
-  else if (currentLevel == 4) {
-    robotsLeft = 2;
-    levelText = "Think, then act";
-  }
-  else if (currentLevel == 5) {
-    robotsLeft = 1;
-    levelText = "A new secret";
-  }
-  else if (currentLevel == 6) {
-    robotsLeft = 2;
-    levelText = "Don't worry";
-  }
-  else if (currentLevel == 7) {
-    robotsLeft = 4;
-    levelText = "The Box";
-  }
-  else if (currentLevel == 8) {
-    robotsLeft = 0;
-    levelText = "Hoarder";
-  }
-  else if (currentLevel == 9) {
-    robotsLeft = 1;
-    levelText = "One Robot";
-  }
-  else {
-    robotsLeft = 0;
-    levelText = "Custom Level";
-  }
+  std::ifstream read (finalFile.c_str());
 
-  if (fexists (finalFile.c_str())) {
-    std::ifstream read (finalFile.c_str());
+  if (!read.fail()) {
+    std::string token = "";
+    std::string tag = "";
+    levelText = "";
+    robotsLeft = 0;
+    std::regex tag_pattern ("\\[.*\\]");
 
-    for (int i = 0; i < 24; i++) {
-      for (int t = 0; t < 32; t++) {
-        read >> map[i][t];
-        tiles[i][t].value = map[i][t];
+    int i = 0;
+    int t = 0;
+
+    while (!read.eof()) {
+      // Get current tag
+      read >> token;
+
+      if (std::regex_match (token, tag_pattern)) {
+        tag = token;
+        read >> token;
+      }
+
+      // Get title
+      if (!tag.compare ("[title]")) {
+        levelText += token + " ";
+      }
+
+      // Get #robots
+      if (!tag.compare ("[robots]")) {
+        robotsLeft = std::stoi (token);
+      }
+
+      // Get map
+      if (!tag.compare ("[map]")) {
+        map[i][t] = std::stoi (token);
+        std::cout << tag << " = " <<   i << std::endl;
+        i++;
+
+        if (i >= 24) {
+          t++;
+          i = 0;
+        }
       }
     }
 
@@ -727,6 +517,8 @@ void changeMap() {
     gameScreen = 4;
     highcolor_fade_in (winscreen, 16);
   }
+
+  read.close();
 }
 
 //Updates games
@@ -743,14 +535,14 @@ void game() {
 
     //Splash
     if (gameScreen == 0) {
-      highcolor_fade_in (intro, 16);
-      rest (1000);
-      highcolor_fade_out (16);
-      highcolor_fade_in (splash, 16);
-      rest (1000);
-      highcolor_fade_out (16);
+      /* highcolor_fade_in (intro, 16);
+       rest (1000);
+       highcolor_fade_out (16);
+       highcolor_fade_in (splash, 16);
+       rest (1000);
+       highcolor_fade_out (16);*/
       gameScreen = 1;
-      highcolor_fade_in (menu, 16);
+      //highcolor_fade_in (menu, 16);
     }
 
     //Menu
@@ -807,10 +599,6 @@ void game() {
 
     //Level Select
     if (gameScreen == 2) {
-
-      //Change map
-      changeMap();
-
       // Die
       if (tiles[y / 40][x / 40].value == 1) {
         lives -= 1;
@@ -833,10 +621,10 @@ void game() {
 
       //Mini tiles tiles
       for (int i = 0; i < 24; i++) {
-        for (int t = 0; t < 32; t++) {
+        for (int t = 31; t >= 0; t--) {
           if (tiles[i][t].image[0] != NULL && tiles[i][t].value != 1) {
             if (perspective == 0) {
-              stretch_sprite (buffer, tiles[i][t].image[0], t * 20 + 320, i * 20 + 220, 30, 30);
+              stretch_sprite (buffer, tiles[i][t].image[0], t * 16 + 320 + i * 16, i * 8 - t * 8 + 220, 32, 64);
             }
             else if (perspective == 1) {
               stretch_sprite (buffer, tiles[i][t].image[0], t * 20 + 320, i * 20 + 220, 20, 20);
@@ -862,14 +650,17 @@ void game() {
         draw_sprite (buffer, cursor[1], mouse_x, mouse_y);
 
         if (mouse_b & 1) {
-          finalFile = "levels/level" + convertInt (currentLevel + 1) + ".map";
+          finalFile = "levels/level" + std::to_string (currentLevel + 1) + ".map";
+          std::ifstream read (finalFile.c_str());
 
-          if (fexists (finalFile.c_str())) {
+          if (!read.fail()) {
             play_sample (click, 255, 125, 1000, 0);
             currentLevel += 1;
             setupGame (false);
             rest (140);
           }
+
+          read.close();
         }
       }
       else if (collision (mouse_x, mouse_x, 320, 978, mouse_y, mouse_y, 220, 718)) {
@@ -924,11 +715,10 @@ void game() {
       if (step % 4 == 0) {
         for (int i = 0; i < 24; i++) {
           for (int t = 0; t < 32; t++) {
-            if (tiles[i][t].value  == 1) {
-              int random_integer;
+            if (tiles[i][t].value == 1) {
               int lowest = 0, highest = 5;
               int range = (highest - lowest) + 1;
-              random_integer = lowest + int (range * rand() / (RAND_MAX + 1.0));
+              int random_integer = lowest + int (range * rand() / (RAND_MAX + 1.0));
 
               if (random_integer == 1 && tiles[i - 1][t].value == 0) {
                 tiles[i - 1][t].value = 1;
@@ -1001,7 +791,7 @@ void game() {
 
       //Draws Tiles
       for (int i = 0; i < 24; i++) {
-        for (int t = 0; t < 32; t++) {
+        for (int t = 31; t >= 0; t--) {
           if (y / 40 == i && x / 40 == t) {
             //Draws Character
             if (perspective == 0) {
@@ -1041,12 +831,12 @@ void game() {
 
           map[i][t] = tiles[i][t].value;
 
-          if (tiles[i][t].image[0] != NULL) {
+          if (tiles[i][t].image[0] != NULL && tiles[i][t].value != 1) {
             if (perspective == 0) {
-              stretch_sprite (buffer, tiles[i][t].image[0], t * 40, i * 40, 60, 60);
+              stretch_sprite (buffer, tiles[i][t].image[0], t * 16 + 320 + i * 16, i * 8 - t * 8 + 220, 32, 64);
             }
-            else {
-              stretch_sprite (buffer, tiles[i][t].image[0], t * 40, i * 40, 40, 40);
+            else if (perspective == 1) {
+              stretch_sprite (buffer, tiles[i][t].image[0], t * 20 + 320, i * 20 + 220, 20, 20);
             }
           }
         }

@@ -1,15 +1,15 @@
-#ifndef BLOCK_H
-#define BLOCK_H
+#ifndef TILE_H
+#define TILE_H
 
 #include <allegro.h>
 
-class Block {
+class Tile {
 
   public:
-    Block();
-    ~Block();
+    Tile();
+    ~Tile();
 
-    void SetImages (const char *image1, const char *image2);
+    void SetImage (const char *image);
 
     int GetY() const;
     int GetX() const;
@@ -29,7 +29,7 @@ class Block {
 
     bool selected;
 
-    BITMAP *images[2];
+    BITMAP *image;
     SAMPLE *sound;
 };
 
