@@ -44,6 +44,7 @@ class StateEngine {
       STATE_LEVEL_SELECT,
       STATE_GAME,
       STATE_EXIT,
+      STATE_WIN,
     };
 
   private:

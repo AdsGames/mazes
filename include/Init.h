@@ -4,14 +4,13 @@
 #include "State.h"
 
 
-class Init : public State
-{
+class Init : public State {
   public:
     Init();
     virtual ~Init();
 
-    virtual void draw(BITMAP* buffer) override;
-    virtual void update(StateEngine &engine) override;
+    virtual void draw (BITMAP *buffer) override;
+    virtual void update (StateEngine &engine) override;
 
   private:
 };

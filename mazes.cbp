@@ -14,6 +14,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add directory="include" />
 				</Compiler>
 			</Target>
 		</Build>
@@ -42,15 +43,47 @@
 			<Add option="-llogg" />
 			<Add option="-lalleg44" />
 		</Linker>
-		<Unit filename="include/block.h" />
+		<Unit filename="include/EndScreen.h" />
+		<Unit filename="include/Game.h" />
+		<Unit filename="include/Init.h" />
+		<Unit filename="include/Intro.h" />
+		<Unit filename="include/LevelSelect.h" />
+		<Unit filename="include/Menu.h" />
+		<Unit filename="include/State.h" />
+		<Unit filename="include/Tile.h" />
+		<Unit filename="include/TransitionEffects.h" />
 		<Unit filename="include/button.h" />
+		<Unit filename="include/globals.h" />
 		<Unit filename="include/id.h" />
+		<Unit filename="include/rapidxml/rapidxml.hpp" />
+		<Unit filename="include/rapidxml/rapidxml_iterators.hpp" />
+		<Unit filename="include/rapidxml/rapidxml_print.hpp" />
+		<Unit filename="include/rapidxml/rapidxml_utils.hpp" />
+		<Unit filename="include/utility/JoystickListener.h" />
+		<Unit filename="include/utility/KeyListener.h" />
+		<Unit filename="include/utility/MouseListener.h" />
+		<Unit filename="include/utility/Timer.h" />
+		<Unit filename="include/utility/tools.h" />
 		<Unit filename="res/resources.rc">
 			<Option compilerVar="WINDRES" />
 		</Unit>
-		<Unit filename="src/block.cpp" />
+		<Unit filename="src/EndScreen.cpp" />
+		<Unit filename="src/Game.cpp" />
+		<Unit filename="src/Init.cpp" />
+		<Unit filename="src/Intro.cpp" />
+		<Unit filename="src/LevelSelect.cpp" />
+		<Unit filename="src/Menu.cpp" />
+		<Unit filename="src/State.cpp" />
+		<Unit filename="src/Tile.cpp" />
+		<Unit filename="src/TransitionEffects.cpp" />
 		<Unit filename="src/button.cpp" />
+		<Unit filename="src/globals.cpp" />
 		<Unit filename="src/main.cpp" />
+		<Unit filename="src/utility/JoystickListener.cpp" />
+		<Unit filename="src/utility/KeyListener.cpp" />
+		<Unit filename="src/utility/MouseListener.cpp" />
+		<Unit filename="src/utility/Timer.cpp" />
+		<Unit filename="src/utility/tools.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

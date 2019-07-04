@@ -6,6 +6,7 @@
 #include "Menu.h"
 #include "LevelSelect.h"
 #include "Init.h"
+#include "EndScreen.h"
 #include "Intro.h"
 
 /*****************
@@ -83,6 +84,11 @@ void StateEngine::changeState() {
     case STATE_LEVEL_SELECT:
       state = new LevelSelect();
       std::cout << ("Switched state to level select.\n");
+      break;
+
+    case STATE_WIN:
+      state = new EndScreen();
+      std::cout << ("Switched state to end screen.\n");
       break;
 
     default:
