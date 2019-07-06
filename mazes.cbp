@@ -52,6 +52,7 @@
 		<Unit filename="include/Menu.h" />
 		<Unit filename="include/State.h" />
 		<Unit filename="include/Tile.h" />
+		<Unit filename="include/TileMap.h" />
 		<Unit filename="include/globals.h" />
 		<Unit filename="include/id.h" />
 		<Unit filename="include/rapidxml/rapidxml.hpp" />
@@ -78,6 +79,7 @@
 		<Unit filename="src/Menu.cpp" />
 		<Unit filename="src/State.cpp" />
 		<Unit filename="src/Tile.cpp" />
+		<Unit filename="src/TileMap.cpp" />
 		<Unit filename="src/globals.cpp" />
 		<Unit filename="src/main.cpp" />
 		<Unit filename="src/ui/Button.cpp" />

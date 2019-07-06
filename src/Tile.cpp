@@ -1,19 +1,19 @@
 #include "Tile.h"
 
-#include <loadpng.h>
+#include "utility/AssetLoader.h"
 
 Tile::Tile()
-  : x (0), y (0), type (0), frame (0), selected (false), image (nullptr), sound (nullptr) {
+  : x (0), y (0), type (0), image (nullptr) {
 
+}
+
+Tile::Tile(int type)
+  : Tile() {
+  SetType(type);
 }
 
 Tile::~Tile() {
   destroy_bitmap (image);
-  destroy_sample (sound);
-}
-
-void Tile::SetImage (const char *image) {
-  this -> image = load_png (image, nullptr);
 }
 
 int Tile::GetX() const {
@@ -24,14 +24,22 @@ int Tile::GetY() const {
   return y;
 }
 
-void Tile::SetX (int newValue) {
-  x = newValue;
+void Tile::SetType(int type) {
+
 }
 
-void Tile::SetY (int newValue) {
-  y = newValue;
+void Tile::SetImage (std::string image) {
+  this -> image = AssetLoader::LoadPng (image);
 }
 
-void Tile::draw (BITMAP *buffer) {
-  draw_sprite (buffer, image, GetX(), GetY());
+void Tile::SetX (int x) {
+  this -> x = x;
+}
+
+void Tile::SetY (int y) {
+  this -> y = y;
+}
+
+void Tile::Draw (BITMAP *buffer) {
+  draw_sprite (buffer, image, x, y);
 }

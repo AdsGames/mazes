@@ -2,35 +2,30 @@
 #define TILE_H
 
 #include <allegro.h>
+#include <string>
 
 class Tile {
 
   public:
     Tile();
+    Tile(int type);
     ~Tile();
-
-    void SetImage (const char *image);
 
     int GetY() const;
     int GetX() const;
 
-    void SetX (int newValue);
-    void SetY (int newValue);
-
-    void draw (BITMAP *buffer);
+    void Draw (BITMAP *buffer);
 
   private:
+    void SetType(int type);
+    void SetImage (std::string imagee);
+    void SetX (int x);
+    void SetY (int y);
 
     int x, y;
-
     int type;
 
-    int frame;
-
-    bool selected;
-
     BITMAP *image;
-    SAMPLE *sound;
 };
 
 #endif
