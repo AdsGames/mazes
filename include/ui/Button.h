@@ -2,6 +2,7 @@
 #define BUTTON_H
 
 #include <allegro.h>
+#include <string>
 #include <functional>
 
 class Button {
@@ -12,7 +13,7 @@ class Button {
 
     void Update();
 
-    void SetImages (const char *image1, const char *image2);
+    void SetImages (std::string image1, std::string image2);
 
     int GetX() const;
     int GetY() const;

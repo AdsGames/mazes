@@ -5,22 +5,24 @@
 #include <functional>
 
 #include "globals.h"
+#include "utility/tools.h"
+#include "utility/AssetLoader.h"
 #include "utility/TransitionEffects.h"
 
 // Create screen
 LevelSelect::LevelSelect() {
   // Load images
-  background = load_png ("images/background.png", nullptr);
-  cursor[0] = load_png ("images/cursor1.png", nullptr);
-  cursor[1] = load_png ("images/cursor2.png", nullptr);
+  background = AssetLoader::LoadPng ("images/background.png");
+  cursor[0] = AssetLoader::LoadPng ("images/cursor1.png");
+  cursor[1] = AssetLoader::LoadPng ("images/cursor2.png");
 
   // Load sounds
-  click = load_sample ("sfx/click.wav");
+  click = AssetLoader::LoadWav ("sfx/click.wav");
 
   // Create button
   btnBack = Button (380, 40);
   btnLeft = Button (0, 0);
-  btnRight = Button(1080, 0);
+  btnRight = Button (1080, 0);
 
   // Sets button images
   btnBack.SetImages ("images/buttons/back.png", "images/buttons/back_hover.png");
@@ -47,16 +49,11 @@ LevelSelect::LevelSelect() {
 
 // Destroy screen
 LevelSelect::~LevelSelect() {
-  TransitionEffects::highcolor_fade_out (16);
-  destroy_bitmap(background);
-  destroy_bitmap(cursor[0]);
-  destroy_bitmap(cursor[1]);
-  destroy_sample(click);
-}
-
-// Collision
-bool LevelSelect::collision (int xMin1, int xMax1, int xMin2, int xMax2, int yMin1, int yMax1, int yMin2, int yMax2) {
-  return (xMin1 < xMax2 && yMin1 < yMax2 && xMin2 < xMax1 && yMin2 < yMax1);
+  TransitionEffects::FadeOut (16);
+  destroy_bitmap (background);
+  destroy_bitmap (cursor[0]);
+  destroy_bitmap (cursor[1]);
+  destroy_sample (click);
 }
 
 // Draw screen

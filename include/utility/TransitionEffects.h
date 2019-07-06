@@ -5,8 +5,8 @@
 
 class TransitionEffects {
   public:
-    static void highcolor_fade_in (BITMAP *bmp_orig, int speed);
-    static void highcolor_fade_out (int speed);
+ static void FadeIn (BITMAP * bmp_orig, int speed);
+    static void FadeOut (int speed);
 
 };
 

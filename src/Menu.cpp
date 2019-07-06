@@ -8,11 +8,11 @@
 #include "utility/TransitionEffects.h"
 
 Menu::Menu()
-  : next_state(-1),
-    show_help(false),
-    btn_start(Button (380, 240)),
-    btn_help(Button (380, 380)),
-    btn_quit(Button (380, 520)) {
+  : next_state (-1),
+    show_help (false),
+    btn_start (Button (380, 240)),
+    btn_help (Button (380, 380)),
+    btn_quit (Button (380, 520)) {
 
   // Load images
   menu = AssetLoader::LoadPng ("images/menu.png");
@@ -40,12 +40,12 @@ Menu::Menu()
 }
 
 Menu::~Menu() {
-  TransitionEffects::highcolor_fade_out (16);
+  TransitionEffects::FadeOut (16);
 
-  destroy_bitmap(menu);
-  destroy_bitmap(help_menu);
-  destroy_bitmap(cursor[0]);
-  destroy_bitmap(cursor[1]);
+  destroy_bitmap (menu);
+  destroy_bitmap (help_menu);
+  destroy_bitmap (cursor[0]);
+  destroy_bitmap (cursor[1]);
 }
 
 void Menu::draw (BITMAP *buffer) {

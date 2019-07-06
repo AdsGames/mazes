@@ -2,6 +2,8 @@
 
 #include <loadpng.h>
 
+#include "utility/tools.h"
+#include "utility/AssetLoader.h"
 #include "utility/TransitionEffects.h"
 
 Game::Game() {
@@ -18,43 +20,43 @@ Game::Game() {
   exitGame = false;
   levelText = "";
 
-  character[0] = load_png ("images/blocks/3d/character_down.png", nullptr);
-  character[1] = load_png ("images/blocks/3d/character_up.png", nullptr);
-  character[2] = load_png ("images/blocks/3d/character_left.png", nullptr);
-  character[3] = load_png ("images/blocks/3d/character_right.png", nullptr);
+  character[0] = AssetLoader::LoadPng ("images/blocks/3d/character_down.png");
+  character[1] = AssetLoader::LoadPng ("images/blocks/3d/character_up.png");
+  character[2] = AssetLoader::LoadPng ("images/blocks/3d/character_left.png");
+  character[3] = AssetLoader::LoadPng ("images/blocks/3d/character_right.png");
 
-  wall = load_png ("images/blocks/3d/wall.png", nullptr);
-  wall2 = load_png ("images/blocks/3d/wall2.png", nullptr);
-  robot = load_png ("images/blocks/3d/robot.png", nullptr);
-  box = load_png ("images/blocks/3d/box.png", nullptr);
-  scrap = load_png ("images/blocks/3d/scrap.png", nullptr);
-  broom = load_png ("images/blocks/3d/broom.png", nullptr);
-  garbagecan = load_png ("images/blocks/3d/garbagecan.png", nullptr);
-  janitorroom = load_png ("images/blocks/3d/janitor_room.png", nullptr);
-  janitorroomopen = load_png ("images/blocks/3d/janitor_room_open.png", nullptr);
-  wood_floor = load_png ("images/blocks/3d/wood_floor.png", nullptr);
-  background = load_png ("images/background.png", nullptr);
+  wall = AssetLoader::LoadPng ("images/blocks/3d/wall.png");
+  wall2 = AssetLoader::LoadPng ("images/blocks/3d/wall2.png");
+  robot = AssetLoader::LoadPng ("images/blocks/3d/robot.png");
+  box = AssetLoader::LoadPng ("images/blocks/3d/box.png");
+  scrap = AssetLoader::LoadPng ("images/blocks/3d/scrap.png");
+  broom = AssetLoader::LoadPng ("images/blocks/3d/broom.png");
+  garbagecan = AssetLoader::LoadPng ("images/blocks/3d/garbagecan.png");
+  janitorroom = AssetLoader::LoadPng ("images/blocks/3d/janitor_room.png");
+  janitorroomopen = AssetLoader::LoadPng ("images/blocks/3d/janitor_room_open.png");
+  wood_floor = AssetLoader::LoadPng ("images/blocks/3d/wood_floor.png");
+  background = AssetLoader::LoadPng ("images/background.png");
 
 
   // Sounds and music
-  sweep = load_sample ("sfx/sweep.wav");
-  explode = load_sample ("sfx/explode.wav");
-  trash = load_sample ("sfx/trash.wav");
-  oof = load_sample ("sfx/oof.wav");
-  winsound = load_sample ("sfx/winsound.wav");
-  door = load_sample ("sfx/door.wav");
-  hitwall = load_sample ("sfx/hitwall.wav");
-  boxhitwall = load_sample ("sfx/boxhitwall.wav");
-  boxslide = load_sample ("sfx/boxslide.wav");
+  sweep = AssetLoader::LoadWav ("sfx/sweep.wav");
+  explode = AssetLoader::LoadWav ("sfx/explode.wav");
+  trash = AssetLoader::LoadWav ("sfx/trash.wav");
+  oof = AssetLoader::LoadWav ("sfx/oof.wav");
+  winsound = AssetLoader::LoadWav ("sfx/winsound.wav");
+  door = AssetLoader::LoadWav ("sfx/door.wav");
+  hitwall = AssetLoader::LoadWav ("sfx/hitwall.wav");
+  boxhitwall = AssetLoader::LoadWav ("sfx/boxhitwall.wav");
+  boxslide = AssetLoader::LoadWav ("sfx/boxslide.wav");
 
-  song = logg_load ("sfx/music.ogg");
+  song = AssetLoader::LoadOgg ("sfx/music.ogg");
 
   // Sets time
   startTime = clock();
   currentTime = clock();
 
   // Sets Font
-  font = load_font ("fonts/arial_black.pcx", nullptr, nullptr);
+  font = AssetLoader::LoadPcxFont ("fonts/arial_black.pcx");
 
   // Background Music
   play_sample (song, 255, 128, 1000, 1);
@@ -130,7 +132,7 @@ void Game::draw (BITMAP *buffer) {
 void Game::update (StateEngine &engine) {
   //Go to menu
   if (key[KEY_M] || joy[0].button[1].b) {
-    TransitionEffects::highcolor_fade_out (16);
+    TransitionEffects::FadeOut (16);
     engine.setNextState (StateEngine::STATE_MENU);
     score = 0;
   }
@@ -193,7 +195,7 @@ void Game::update (StateEngine &engine) {
 
   //Restart Map
   if (key[KEY_R] || joy[0].button[2].b) {
-    TransitionEffects::highcolor_fade_out (16);
+    TransitionEffects::FadeOut (16);
     changeMap();
   }
 
@@ -221,7 +223,7 @@ void Game::update (StateEngine &engine) {
     lives += 1;
 
     if (!changeMap()) {
-      TransitionEffects::highcolor_fade_out (16);
+      TransitionEffects::FadeOut (16);
       engine.setNextState (StateEngine::STATE_WIN);
     }
   }
@@ -319,11 +321,6 @@ void Game::charactermove() {
   }
 
   mousePressed = false;
-}
-
-//Collision
-bool Game::collision (int xMin1, int xMax1, int xMin2, int xMax2, int yMin1, int yMax1, int yMin2, int yMax2) {
-  return (xMin1 < xMax2 && yMin1 < yMax2 && xMin2 < xMax1 && yMin2 < yMax1);
 }
 
 // Update Blocks
@@ -461,7 +458,7 @@ bool Game::changeMap() {
     if (gameScreen == 3) {
       textprintf_centre_ex (screen, font, 640, 460, makecol (255, 255, 255), -2, "%s", levelText.c_str());
       rest (1000);
-      TransitionEffects::highcolor_fade_out (16);
+      TransitionEffects::FadeOut (16);
     }
 
     read.close();

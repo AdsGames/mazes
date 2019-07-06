@@ -14,7 +14,7 @@ void AssetLoader::Abort (std::string message) {
 }
 
 // Load image
-BITMAP* AssetLoader::LoadPng (std::string path) {
+BITMAP *AssetLoader::LoadPng (std::string path) {
   BITMAP *temp = nullptr;
 
   if (! (temp = load_png (path.c_str(), nullptr)))
@@ -24,7 +24,7 @@ BITMAP* AssetLoader::LoadPng (std::string path) {
 }
 
 // Load ogg
-SAMPLE* AssetLoader::LoadOgg (std::string path) {
+SAMPLE *AssetLoader::LoadOgg (std::string path) {
   SAMPLE *temp = nullptr;
 
   if (! (temp = logg_load (path.c_str())))
@@ -34,7 +34,7 @@ SAMPLE* AssetLoader::LoadOgg (std::string path) {
 }
 
 // Load sample
-SAMPLE* AssetLoader::LoadWav (std::string path) {
+SAMPLE *AssetLoader::LoadWav (std::string path) {
   SAMPLE *temp = nullptr;
 
   if (! (temp = load_sample (path.c_str())))
@@ -44,7 +44,7 @@ SAMPLE* AssetLoader::LoadWav (std::string path) {
 }
 
 // Load font
-FONT* AssetLoader::LoadPcxFont (std::string path) {
+FONT *AssetLoader::LoadPcxFont (std::string path) {
   FONT *temp = nullptr;
 
   if (! (temp = load_font (path.c_str(), nullptr, nullptr)))

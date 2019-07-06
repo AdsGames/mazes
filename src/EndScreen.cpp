@@ -20,8 +20,8 @@ void EndScreen::draw (BITMAP *buffer) {
 
 void EndScreen::update (StateEngine &engine) {
   if (key[KEY_SPACE] || key[KEY_ENTER] || mouse_b & 1  || joy[0].button[0].b) {
-    TransitionEffects::highcolor_fade_out (16);
+    TransitionEffects::FadeOut (16);
     engine.setNextState (StateEngine::STATE_MENU);
-    TransitionEffects::highcolor_fade_in (winscreen, 16);
+    TransitionEffects::FadeIn (winscreen, 16);
   }
 }

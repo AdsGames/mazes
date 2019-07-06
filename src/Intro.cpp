@@ -6,17 +6,17 @@
 #include "utility/TransitionEffects.h"
 
 Intro::Intro() {
-  intro = AssetLoader::LoadPng("images/intro.png");
+  intro = AssetLoader::LoadPng ("images/intro.png");
   splash = AssetLoader::LoadPng ("images/splash.png");
 
   tmr.Start();
-  TransitionEffects::highcolor_fade_in (intro, 16);
+  TransitionEffects::FadeIn (intro, 16);
 }
 
 Intro::~Intro() {
   destroy_bitmap (intro);
   destroy_bitmap (splash);
-  TransitionEffects::highcolor_fade_out (16);
+  TransitionEffects::FadeOut (16);
 }
 
 void Intro::draw (BITMAP *buffer) {

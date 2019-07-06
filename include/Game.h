@@ -97,7 +97,6 @@ class Game : public State {
     clock_t startTime;
     clock_t currentTime;
 
-    bool collision (int xMin1, int xMax1, int xMin2, int xMax2, int yMin1, int yMax1, int yMin2, int yMax2);
     void resetBlocks (int newI, int newT);
     bool changeMap();
 };

@@ -30,7 +30,7 @@ void Button::SetOnClick (std::function<void (void)> func) {
 }
 
 // Load images from file
-void Button::SetImages (const char *image1, const char *image2) {
+void Button::SetImages (std::string image1, std::string image2) {
   images[0] = AssetLoader::LoadPng (image1);
   images[1] = AssetLoader::LoadPng (image2);
 

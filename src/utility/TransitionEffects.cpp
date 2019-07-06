@@ -1,6 +1,6 @@
 #include "utility/TransitionEffects.h"
 
-void TransitionEffects::highcolor_fade_in (BITMAP *bmp_orig, int speed) {
+void TransitionEffects::FadeIn (BITMAP *bmp_orig, int speed) {
   BITMAP *bmp_buff;
 
   if ((bmp_buff = create_bitmap (SCREEN_W, SCREEN_H))) {
@@ -23,7 +23,7 @@ void TransitionEffects::highcolor_fade_in (BITMAP *bmp_orig, int speed) {
   blit (bmp_orig, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
 }
 
-void TransitionEffects::highcolor_fade_out (int speed) {
+void TransitionEffects::FadeOut (int speed) {
   BITMAP *bmp_orig;
 
   if ((bmp_orig = create_bitmap (SCREEN_W, SCREEN_H))) {
