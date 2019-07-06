@@ -2,7 +2,7 @@
 
 #include <loadpng.h>
 
-#include "TransitionEffects.h"
+#include "utility/TransitionEffects.h"
 #include "globals.h"
 
 EndScreen::EndScreen() {

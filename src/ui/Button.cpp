@@ -1,6 +1,7 @@
 #include "ui/Button.h"
 
 #include "utility/tools.h"
+#include "utility/AssetLoader.h"
 #include "utility/MouseListener.h"
 
 Button::Button()
@@ -30,8 +31,8 @@ void Button::SetOnClick (std::function<void (void)> func) {
 
 // Load images from file
 void Button::SetImages (const char *image1, const char *image2) {
-  images[0] = load_png_ex (image1);
-  images[1] = load_png_ex (image2);
+  images[0] = AssetLoader::LoadPng (image1);
+  images[1] = AssetLoader::LoadPng (image2);
 
   // Size
   height = images[0] -> h;
@@ -39,8 +40,8 @@ void Button::SetImages (const char *image1, const char *image2) {
 }
 
 bool Button::Hover() const {
-  return collisionAny (MouseListener::x, MouseListener::x, x, x + width,
-                       MouseListener::y, MouseListener::y, y, y + height);
+  return collision (MouseListener::x, MouseListener::x, x, x + width,
+                    MouseListener::y, MouseListener::y, y, y + height);
 }
 
 void Button::Update() {

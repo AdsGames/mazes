@@ -2,11 +2,12 @@
 
 #include <loadpng.h>
 
-#include "TransitionEffects.h"
+#include "utility/AssetLoader.h"
+#include "utility/TransitionEffects.h"
 
 Intro::Intro() {
-  intro = load_png ("images/intro.png", nullptr);
-  splash = load_png ("images/splash.png", nullptr);
+  intro = AssetLoader::LoadPng("images/intro.png");
+  splash = AssetLoader::LoadPng ("images/splash.png");
 
   tmr.Start();
   TransitionEffects::highcolor_fade_in (intro, 16);

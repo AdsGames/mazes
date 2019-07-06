@@ -2,7 +2,7 @@
 
 #include <loadpng.h>
 
-#include "TransitionEffects.h"
+#include "utility/TransitionEffects.h"
 
 Game::Game() {
   won = 0;

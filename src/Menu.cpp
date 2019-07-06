@@ -3,8 +3,9 @@
 #include <loadpng.h>
 #include <functional>
 
+#include "utility/AssetLoader.h"
 #include "utility/MouseListener.h"
-#include "TransitionEffects.h"
+#include "utility/TransitionEffects.h"
 
 Menu::Menu()
   : next_state(-1),
@@ -14,10 +15,10 @@ Menu::Menu()
     btn_quit(Button (380, 520)) {
 
   // Load images
-  menu = load_png ("images/menu.png", nullptr);
-  cursor[0] = load_png ("images/cursor1.png", nullptr);
-  cursor[1] = load_png ("images/cursor2.png", nullptr);
-  help_menu = load_png ("images/help.png", nullptr);
+  menu = AssetLoader::LoadPng ("images/menu.png");
+  cursor[0] = AssetLoader::LoadPng ("images/cursor1.png");
+  cursor[1] = AssetLoader::LoadPng ("images/cursor2.png");
+  help_menu = AssetLoader::LoadPng ("images/help.png");
 
   // Sets button images
   btn_start.SetImages ("images/buttons/start.png", "images/buttons/start_hover.png");

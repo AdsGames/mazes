@@ -15,6 +15,7 @@
 				<Compiler>
 					<Add option="-g" />
 					<Add directory="include" />
+					<Add directory="include/utility" />
 				</Compiler>
 			</Target>
 		</Build>
@@ -51,7 +52,6 @@
 		<Unit filename="include/Menu.h" />
 		<Unit filename="include/State.h" />
 		<Unit filename="include/Tile.h" />
-		<Unit filename="include/TransitionEffects.h" />
 		<Unit filename="include/globals.h" />
 		<Unit filename="include/id.h" />
 		<Unit filename="include/rapidxml/rapidxml.hpp" />
@@ -60,10 +60,12 @@
 		<Unit filename="include/rapidxml/rapidxml_utils.hpp" />
 		<Unit filename="include/ui/Button.h" />
 		<Unit filename="include/ui/InputBox.h" />
+		<Unit filename="include/utility/AssetLoader.h" />
 		<Unit filename="include/utility/JoystickListener.h" />
 		<Unit filename="include/utility/KeyListener.h" />
 		<Unit filename="include/utility/MouseListener.h" />
 		<Unit filename="include/utility/Timer.h" />
+		<Unit filename="include/utility/TransitionEffects.h" />
 		<Unit filename="include/utility/tools.h" />
 		<Unit filename="res/resources.rc">
 			<Option compilerVar="WINDRES" />
@@ -76,15 +78,16 @@
 		<Unit filename="src/Menu.cpp" />
 		<Unit filename="src/State.cpp" />
 		<Unit filename="src/Tile.cpp" />
-		<Unit filename="src/TransitionEffects.cpp" />
 		<Unit filename="src/globals.cpp" />
 		<Unit filename="src/main.cpp" />
 		<Unit filename="src/ui/Button.cpp" />
 		<Unit filename="src/ui/InputBox.cpp" />
+		<Unit filename="src/utility/AssetLoader.cpp" />
 		<Unit filename="src/utility/JoystickListener.cpp" />
 		<Unit filename="src/utility/KeyListener.cpp" />
 		<Unit filename="src/utility/MouseListener.cpp" />
 		<Unit filename="src/utility/Timer.cpp" />
+		<Unit filename="src/utility/TransitionEffects.cpp" />
 		<Unit filename="src/utility/tools.cpp" />
 		<Extensions>
 			<code_completion />

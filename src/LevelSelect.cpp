@@ -5,7 +5,7 @@
 #include <functional>
 
 #include "globals.h"
-#include "TransitionEffects.h"
+#include "utility/TransitionEffects.h"
 
 // Create screen
 LevelSelect::LevelSelect() {

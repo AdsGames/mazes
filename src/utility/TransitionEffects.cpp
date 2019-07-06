@@ -1,4 +1,4 @@
-#include "TransitionEffects.h"
+#include "utility/TransitionEffects.h"
 
 void TransitionEffects::highcolor_fade_in (BITMAP *bmp_orig, int speed) {
   BITMAP *bmp_buff;
