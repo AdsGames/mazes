@@ -10,7 +10,7 @@ InputBox::InputBox()
 }
 
 InputBox::InputBox (int x, int y, int width, int height, const std::string &value, const std::string &type)
-  : x (x), y (y), width (width), height (height), text (value), type (type), text_iter(0), focused(false) {
+  : x (x), y (y), width (width), height (height), text (value), type (type), text_iter (0), focused (false) {
 
 }
 

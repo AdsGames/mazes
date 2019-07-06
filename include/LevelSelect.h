@@ -13,10 +13,10 @@ class LevelSelect : public State {
     virtual void update (StateEngine &engine) override;
 
   private:
+    // Next state
+    int next_state = -1;
+
     // Images
-    BITMAP *levelSelect;
-    BITMAP *levelSelectLeft;
-    BITMAP *levelSelectRight;
     BITMAP *background;
     BITMAP *cursor[2];
 
@@ -24,7 +24,7 @@ class LevelSelect : public State {
     SAMPLE *click;
 
     // Buttons
-    Button back;
+    Button btnBack, btnLeft, btnRight;
 
     // Collision
     bool collision (int xMin1, int xMax1, int xMin2, int xMax2, int yMin1, int yMax1, int yMin2, int yMax2);

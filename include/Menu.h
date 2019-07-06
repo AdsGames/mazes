@@ -18,9 +18,7 @@ class Menu : public State {
     bool show_help;
 
     // Buttons
-    Button start;
-    Button help;
-    Button quit;
+    Button btn_start, btn_help, btn_quit;
 
     // Images
     BITMAP *menu;

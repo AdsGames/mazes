@@ -2,15 +2,14 @@
 
 #include <loadpng.h>
 #include <fstream>
+#include <functional>
 
 #include "globals.h"
 #include "TransitionEffects.h"
 
+// Create screen
 LevelSelect::LevelSelect() {
   // Load images
-  levelSelect = load_png ("images/levelSelect.png", nullptr);
-  levelSelectLeft = load_png ("images/levelSelectLeft.png", nullptr);
-  levelSelectRight = load_png ("images/levelSelectRight.png", nullptr);
   background = load_png ("images/background.png", nullptr);
   cursor[0] = load_png ("images/cursor1.png", nullptr);
   cursor[1] = load_png ("images/cursor2.png", nullptr);
@@ -19,50 +18,74 @@ LevelSelect::LevelSelect() {
   click = load_sample ("sfx/click.wav");
 
   // Create button
-  back = Button(380, 40);
+  btnBack = Button (380, 40);
+  btnLeft = Button (0, 0);
+  btnRight = Button(1080, 0);
 
   // Sets button images
-  back.SetImages ("images/buttons/back.png", "images/buttons/back_hover.png");
+  btnBack.SetImages ("images/buttons/back.png", "images/buttons/back_hover.png");
+  btnLeft.SetImages ("images/buttons/levelSelectLeft.png", "images/buttons/levelSelectLeftHover.png");
+  btnRight.SetImages ("images/buttons/levelSelectRight.png", "images/buttons/levelSelectRightHover.png");
+
+  // On clicks
+  btnBack.SetOnClick ([this]() {
+    next_state = StateEngine::STATE_MENU;
+  });
+
+  btnLeft.SetOnClick ([this]() {
+    play_sample (click, 255, 125, 1000, 0);
+    levelOn = levelOn == 0 ? 0 : levelOn - 1;
+    //setupGame (false);
+  });
+
+  btnRight.SetOnClick ([this]() {
+    play_sample (click, 255, 125, 1000, 0);
+    levelOn = levelOn == 8 ? 8 : levelOn + 1;
+    //setupGame (false);
+  });
 }
 
+// Destroy screen
 LevelSelect::~LevelSelect() {
-
+  TransitionEffects::highcolor_fade_out (16);
+  destroy_bitmap(background);
+  destroy_bitmap(cursor[0]);
+  destroy_bitmap(cursor[1]);
+  destroy_sample(click);
 }
 
-//Collision
+// Collision
 bool LevelSelect::collision (int xMin1, int xMax1, int xMin2, int xMax2, int yMin1, int yMax1, int yMin2, int yMax2) {
   return (xMin1 < xMax2 && yMin1 < yMax2 && xMin2 < xMax1 && yMin2 < yMax1);
 }
 
+// Draw screen
 void LevelSelect::draw (BITMAP *buffer) {
-  draw_sprite (buffer, levelSelect, 0, 0);
-  back.Draw (buffer);
+  clear_to_color (buffer, 0x0026FF);
+
+  btnBack.Draw (buffer);
+  btnLeft.Draw (buffer);
+  btnRight.Draw (buffer);
+
   stretch_sprite (buffer, background, 320, 220, 640, 480);
   textprintf_centre_ex (buffer, font, 640, 760, makecol (0, 0, 0), makecol (255, 255, 255), "Level:%i", levelOn);
-
-  //Click buttons
-  if (collision (mouse_x, mouse_x, -1, 200, mouse_y, mouse_y, 0, 960)) {
-    draw_sprite (buffer, levelSelectLeft, 0, 0);
-    draw_sprite (buffer, cursor[1], mouse_x, mouse_y);
-  }
-  else if (collision (mouse_x, mouse_x, 1080, 1280, mouse_y, mouse_y, 0, 960)) {
-    draw_sprite (buffer, levelSelectRight, 1080, 0);
-    draw_sprite (buffer, cursor[1], mouse_x, mouse_y);
-  }
-  else if (collision (mouse_x, mouse_x, 320, 978, mouse_y, mouse_y, 220, 718)) {
-    draw_sprite (buffer, cursor[1], mouse_x, mouse_y);
-  }
-  else {
-    draw_sprite (buffer, cursor[0], mouse_x, mouse_y);
-  }
+  draw_sprite (buffer, cursor[0], mouse_x, mouse_y);
 }
 
+// Update screen
 void LevelSelect::update (StateEngine &engine) {
-  //Go to menu
-  if (key[KEY_M] || joy[0].button[1].b) {
-    TransitionEffects::highcolor_fade_out (16);
-    engine.setNextState (StateEngine::STATE_MENU);
+  // Go to menu
+  if (key[KEY_M]) {
+    next_state = StateEngine::STATE_MENU;
   }
+
+  if (next_state != -1) {
+    engine.setNextState (next_state);
+  }
+
+  btnBack.Update();
+  btnLeft.Update();
+  btnRight.Update();
 
   //Mini tiles tiles
   /*for (int i = 0; i < 24; i++) {
@@ -78,39 +101,8 @@ void LevelSelect::update (StateEngine &engine) {
     }
   }*/
 
-  //Click buttons
-  if (collision (mouse_x, mouse_x, -1, 200, mouse_y, mouse_y, 0, 960)) {
-    if (mouse_b & 1 && levelOn > 1) {
-      play_sample (click, 255, 125, 1000, 0);
-      levelOn -= 1;
-      //setupGame (false);
-      rest (140);
-    }
-  }
-  else if (collision (mouse_x, mouse_x, 1080, 1280, mouse_y, mouse_y, 0, 960)) {
-    if (mouse_b & 1) {
-      std::ifstream read ("levels/level" + std::to_string (levelOn + 1) + ".map");
-
-      if (!read.fail()) {
-        play_sample (click, 255, 125, 1000, 0);
-        levelOn += 1;
-        //setupGame (false);
-        rest (140);
-      }
-
-      read.close();
-    }
-  }
-  else if (collision (mouse_x, mouse_x, 320, 978, mouse_y, mouse_y, 220, 718)) {
-    if (mouse_b & 1) {
-      TransitionEffects::highcolor_fade_out (16);
-      engine.setNextState (StateEngine::STATE_GAME);
-      //changeMap();
-    }
-  }
-
-  if (mouse_b & 1 && back.Hover() == true) {
-    TransitionEffects::highcolor_fade_out (16);
-    engine.setNextState (StateEngine::STATE_MENU);
+  // Click level
+  if (mouse_b & 1 && collision (mouse_x, mouse_x, 320, 978, mouse_y, mouse_y, 220, 718)) {
+    next_state = StateEngine::STATE_GAME;
   }
 }
