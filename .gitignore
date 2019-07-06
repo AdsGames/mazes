@@ -6,3 +6,4 @@ output/
 *.dll
 *.res
 CppCheckResults.xml
+*.depend
