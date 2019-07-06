@@ -2,7 +2,7 @@
 #define LEVELSELECT_H
 
 #include "State.h"
-#include "button.h"
+#include "ui/Button.h"
 
 class LevelSelect : public State {
   public:

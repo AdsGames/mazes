@@ -18,12 +18,11 @@ LevelSelect::LevelSelect() {
   // Load sounds
   click = load_sample ("sfx/click.wav");
 
+  // Create button
+  back = Button(380, 40);
+
   // Sets button images
   back.SetImages ("images/buttons/back.png", "images/buttons/back_hover.png");
-
-  // Sets button positions
-  back.SetX (380);
-  back.SetY (40);
 }
 
 LevelSelect::~LevelSelect() {
@@ -37,7 +36,7 @@ bool LevelSelect::collision (int xMin1, int xMax1, int xMin2, int xMax2, int yMi
 
 void LevelSelect::draw (BITMAP *buffer) {
   draw_sprite (buffer, levelSelect, 0, 0);
-  back.draw (buffer);
+  back.Draw (buffer);
   stretch_sprite (buffer, background, 320, 220, 640, 480);
   textprintf_centre_ex (buffer, font, 640, 760, makecol (0, 0, 0), makecol (255, 255, 255), "Level:%i", levelOn);
 

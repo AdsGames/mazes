@@ -6,7 +6,7 @@ Init::Init() {
   set_display_switch_mode (SWITCH_BACKGROUND);
 
   // Setup number generator
- srand (time (nullptr));
+  srand (time (nullptr));
 
   set_window_title ("Mazes");
 }

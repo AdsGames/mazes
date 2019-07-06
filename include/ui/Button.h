@@ -2,28 +2,30 @@
 #define BUTTON_H
 
 #include <allegro.h>
+#include <functional>
 
 class Button {
   public:
     Button();
+    Button (int x, int y);
     ~Button();
 
+    void Update();
+
     void SetImages (const char *image1, const char *image2);
-
-    void draw (BITMAP *tempBitmap);
-
-    void SetX (int newValue);
-    void SetY (int newValue);
-
-    void SetType (int newType);
-    void SetValue (int newValue);
-
-    bool Hover() const;
 
     int GetX() const;
     int GetY() const;
 
+    void SetOnClick (std::function<void()> func);
+
+    void Draw (BITMAP *buffer);
+
+    bool Hover() const;
+
   private:
+    std::function<void (void)> OnClick;
+
     int x, y;
     int width, height;
 

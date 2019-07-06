@@ -3,6 +3,8 @@
 
 #include "State.h"
 
+#include "utility/Timer.h"
+
 class Intro : public State {
   public:
     Intro();
@@ -14,6 +16,7 @@ class Intro : public State {
   private:
     BITMAP *intro;
     BITMAP *splash;
+    Timer tmr;
 };
 
 #endif // INTRO_H

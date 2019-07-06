@@ -52,13 +52,14 @@
 		<Unit filename="include/State.h" />
 		<Unit filename="include/Tile.h" />
 		<Unit filename="include/TransitionEffects.h" />
-		<Unit filename="include/button.h" />
 		<Unit filename="include/globals.h" />
 		<Unit filename="include/id.h" />
 		<Unit filename="include/rapidxml/rapidxml.hpp" />
 		<Unit filename="include/rapidxml/rapidxml_iterators.hpp" />
 		<Unit filename="include/rapidxml/rapidxml_print.hpp" />
 		<Unit filename="include/rapidxml/rapidxml_utils.hpp" />
+		<Unit filename="include/ui/Button.h" />
+		<Unit filename="include/ui/InputBox.h" />
 		<Unit filename="include/utility/JoystickListener.h" />
 		<Unit filename="include/utility/KeyListener.h" />
 		<Unit filename="include/utility/MouseListener.h" />
@@ -76,9 +77,10 @@
 		<Unit filename="src/State.cpp" />
 		<Unit filename="src/Tile.cpp" />
 		<Unit filename="src/TransitionEffects.cpp" />
-		<Unit filename="src/button.cpp" />
 		<Unit filename="src/globals.cpp" />
 		<Unit filename="src/main.cpp" />
+		<Unit filename="src/ui/Button.cpp" />
+		<Unit filename="src/ui/InputBox.cpp" />
 		<Unit filename="src/utility/JoystickListener.cpp" />
 		<Unit filename="src/utility/KeyListener.cpp" />
 		<Unit filename="src/utility/MouseListener.cpp" />

@@ -1,10 +1,18 @@
 #include "Menu.h"
 
 #include <loadpng.h>
+#include <functional>
 
+#include "utility/MouseListener.h"
 #include "TransitionEffects.h"
 
-Menu::Menu() {
+Menu::Menu()
+  : next_state(-1),
+    show_help(false),
+    start(Button (380, 240)),
+    help(Button (380, 380)),
+    quit(Button (380, 520)) {
+
   // Load images
   menu = load_png ("images/menu.png", nullptr);
   cursor[0] = load_png ("images/cursor1.png", nullptr);
@@ -16,53 +24,62 @@ Menu::Menu() {
   help.SetImages ("images/buttons/help.png", "images/buttons/help_hover.png");
   quit.SetImages ("images/buttons/quit.png", "images/buttons/quit_hover.png");
 
-  // Sets button positions
-  start.SetX (380);
-  help.SetX (380);
-  quit.SetX (380);
+  // Button onclicks
+  start.SetOnClick ([this]() {
+    next_state = StateEngine::STATE_LEVEL_SELECT;
+  });
 
-  start.SetY (240);
-  help.SetY (380);
-  quit.SetY (520);
+  help.SetOnClick ([this]() {
+    show_help = true;
+  });
+
+  quit.SetOnClick ([this]() {
+    next_state = StateEngine::STATE_EXIT;
+  });
 }
 
 Menu::~Menu() {
+  TransitionEffects::highcolor_fade_out (16);
 
+  destroy_bitmap(menu);
+  destroy_bitmap(help_menu);
+  destroy_bitmap(cursor[0]);
+  destroy_bitmap(cursor[1]);
 }
 
 void Menu::draw (BITMAP *buffer) {
-  if (mouse_b & 1) {
-    if (help.Hover()) {
-      draw_sprite (buffer, help_menu, 0, 0);
-    }
-  }
-
   //Draws Menu
   draw_sprite (buffer, menu, 0, 0);
 
-  //Draws Buttons
-  start.draw (buffer);
-  help.draw (buffer);
-  quit.draw (buffer);
+  // Draws Buttons
+  start.Draw (buffer);
+  help.Draw (buffer);
+  quit.Draw (buffer);
+
+  // Draw help
+  if (show_help) {
+    draw_sprite (buffer, help_menu, 0, 0);
+  }
 
   //Draws Cursor
   draw_sprite (buffer, cursor[0], mouse_x, mouse_y);
 }
 
 void Menu::update (StateEngine &engine) {
-  //Checks for mouse press
-  if (mouse_b & 1) {
-    if (start.Hover()) {
-      TransitionEffects::highcolor_fade_out (16);
-      engine.setNextState (StateEngine::STATE_LEVEL_SELECT);
-    }
-    else if (help.Hover()) {
-      TransitionEffects::highcolor_fade_in (help_menu, 16);
-      TransitionEffects::highcolor_fade_out (16);
-    }
-    else if (quit.Hover()) {
-      engine.setNextState (StateEngine::STATE_EXIT);
-    }
+  // Change state
+  if (next_state != -1) {
+    engine.setNextState (next_state);
+  }
+
+  // Help closed
+  if (!show_help) {
+    start.Update();
+    help.Update();
+    quit.Update();
+  }
+  // Close help
+  else if (MouseListener::mouse_pressed & 1) {
+    show_help = false;
   }
 }
 

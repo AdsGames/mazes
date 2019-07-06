@@ -2,7 +2,7 @@
 #define MENU_H
 
 #include "State.h"
-#include "button.h"
+#include "ui/Button.h"
 
 class Menu : public State {
   public:
@@ -13,6 +13,10 @@ class Menu : public State {
     virtual void update (StateEngine &engine) override;
 
   private:
+    // Menu
+    int next_state;
+    bool show_help;
+
     // Buttons
     Button start;
     Button help;
@@ -22,11 +26,6 @@ class Menu : public State {
     BITMAP *menu;
     BITMAP *help_menu;
     BITMAP *cursor[2];
-
-    // Menu
-    int selectorY, selectorX, newSelectorY, selected_object;
-    int cursor_x, cursor_y;
-    int menu_view_x, menu_view_y;
 };
 
 #endif // MENU_H
