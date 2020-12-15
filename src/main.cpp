@@ -8,10 +8,10 @@
 #include <loadpng.h>
 #include <logg.h>
 
-#include <string>
+#include <math.h>
 #include <fstream>
 #include <sstream>
-#include <math.h>
+#include <string>
 
 #include "rapidxml/rapidxml.hpp"
 #include "rapidxml/rapidxml_print.hpp"
@@ -19,14 +19,14 @@
 #include "button.h"
 #include "id.h"
 
-//Creates Buttons
+// Creates Buttons
 Button start;
 Button help;
 Button quit;
 Button mode;
 Button back;
 
-//Fonts
+// Fonts
 FONT *f1, *f2, *f3, *f4, *f5;
 
 // Menu
@@ -34,7 +34,7 @@ int selectorY, selectorX, newSelectorY, selected_object;
 int cursor_x, cursor_y;
 int menu_view_x, menu_view_y;
 
-//Creates integers
+// Creates integers
 int lives;
 int currentLevel;
 int robotsLeft;
@@ -55,110 +55,139 @@ bool exitGame;
 
 std::string levelText;
 
-//Used for file loading
+// Used for file loading
 std::string finalFile;
 
-//Main Map
-int map[24][32] = {
-  {5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
-  {5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5}
-};
+// Main Map
+int map[24][32] = {{5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+                    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
+                   {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
+                   {5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 5},
+                   {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
+                   {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
+                   {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
+                   {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
+                   {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
+                   {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
+                   {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
+                   {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
+                   {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
+                   {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
+                   {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
+                   {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
+                   {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
+                   {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
+                   {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
+                   {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
+                   {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
+                   {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
+                   {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
+                   {5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5},
+                   {5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+                    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5}};
 
-//Define bitmaps
-BITMAP *buffer;
-BITMAP *character[4];
-BITMAP *background;
-BITMAP *robot;
-BITMAP *wall;
-BITMAP *fakeWall;
-BITMAP *ground;
-BITMAP *box;
-BITMAP *menu;
-BITMAP *help_menu;
-BITMAP *cursor[2];
-BITMAP *levelSelect;
-BITMAP *levelSelectLeft;
-BITMAP *levelSelectRight;
-BITMAP *winscreen;
-BITMAP *intro;
-BITMAP *splash;
+// Define bitmaps
+BITMAP* buffer;
+BITMAP* character[4];
+BITMAP* background;
+BITMAP* robot;
+BITMAP* wall;
+BITMAP* fakeWall;
+BITMAP* ground;
+BITMAP* box;
+BITMAP* menu;
+BITMAP* help_menu;
+BITMAP* cursor[2];
+BITMAP* levelSelect;
+BITMAP* levelSelectLeft;
+BITMAP* levelSelectRight;
+BITMAP* winscreen;
+BITMAP* intro;
+BITMAP* splash;
 
-BITMAP *scrap;
-BITMAP *broom;
-BITMAP *garbagecan;
-BITMAP *janitorroom;
-BITMAP *janitorroomopen;
-BITMAP *wall2;
-BITMAP *wood_floor;
+BITMAP* scrap;
+BITMAP* broom;
+BITMAP* garbagecan;
+BITMAP* janitorroom;
+BITMAP* janitorroomopen;
+BITMAP* wall2;
+BITMAP* wood_floor;
 
-//Define sound effects
-SAMPLE *song;
-SAMPLE *hitwall;
-SAMPLE *boxhitwall;
-SAMPLE *boxslide;
-SAMPLE *explode;
-SAMPLE *sweep;
-SAMPLE *trash;
-SAMPLE *oof;
-SAMPLE *winsound;
-SAMPLE *door;
-SAMPLE *click;
+// Define sound effects
+SAMPLE* song;
+SAMPLE* hitwall;
+SAMPLE* boxhitwall;
+SAMPLE* boxslide;
+SAMPLE* explode;
+SAMPLE* sweep;
+SAMPLE* trash;
+SAMPLE* oof;
+SAMPLE* winsound;
+SAMPLE* door;
+SAMPLE* click;
 
 void restart();
 void update();
 void restartlevel();
-void loadLevel (char fileName[]);
+void loadLevel(char fileName[]);
 void changeMap();
 
-//Timers
+// Timers
 clock_t startTime;
 clock_t currentTime;
 
-//Tiles on screen
+// Tiles on screen
 struct tile {
-  BITMAP *image[2];
+  BITMAP* image[2];
   int value;
   int type;
   int dir;
 } tiles[24][32];
 
-//Convert int to string
-std::string convertInt (int number) {
+// Convert int to string
+std::string convertInt(int number) {
   std::stringstream ss;
   ss << number;
   return ss.str();
 }
 
-//Checks if file exists
-bool fexists (const char *filename) {
-  std::ifstream ifile (filename);
+// Checks if file exists
+bool fexists(const char* filename) {
+  std::ifstream ifile(filename);
   return !ifile.fail();
 }
 
-//Collision
-bool collision (int xMin1, int xMax1, int xMin2, int xMax2, int yMin1, int yMax1, int yMin2, int yMax2) {
+// Collision
+bool collision(int xMin1,
+               int xMax1,
+               int xMin2,
+               int xMax2,
+               int yMin1,
+               int yMax1,
+               int yMin2,
+               int yMax2) {
   if (xMin1 < xMax2 && yMin1 < yMax2 && xMin2 < xMax1 && yMin2 < yMax1) {
     return true;
   }
@@ -166,60 +195,60 @@ bool collision (int xMin1, int xMax1, int xMin2, int xMax2, int yMin1, int yMax1
   return false;
 }
 
-void highcolor_fade_in (BITMAP *bmp_orig, int speed) {
-  BITMAP *bmp_buff;
+void highcolor_fade_in(BITMAP* bmp_orig, int speed) {
+  BITMAP* bmp_buff;
 
-  if ((bmp_buff = create_bitmap (SCREEN_W, SCREEN_H))) {
+  if ((bmp_buff = create_bitmap(SCREEN_W, SCREEN_H))) {
     int a;
 
     if (speed <= 0)
       speed = 16;
 
     for (a = 0; a < 256; a += speed) {
-      clear (bmp_buff);
-      set_trans_blender (0, 0, 0, a);
-      draw_trans_sprite (bmp_buff, bmp_orig, 0, 0);
+      clear(bmp_buff);
+      set_trans_blender(0, 0, 0, a);
+      draw_trans_sprite(bmp_buff, bmp_orig, 0, 0);
       vsync();
-      blit (bmp_buff, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+      blit(bmp_buff, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
     }
 
-    destroy_bitmap (bmp_buff);
+    destroy_bitmap(bmp_buff);
   }
 
-  blit (bmp_orig, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+  blit(bmp_orig, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
 }
 
-void highcolor_fade_out (int speed) {
-  BITMAP *bmp_orig;
+void highcolor_fade_out(int speed) {
+  BITMAP* bmp_orig;
 
-  if ((bmp_orig = create_bitmap (SCREEN_W, SCREEN_H))) {
-    BITMAP *bmp_buff;
+  if ((bmp_orig = create_bitmap(SCREEN_W, SCREEN_H))) {
+    BITMAP* bmp_buff;
 
-    if ((bmp_buff = create_bitmap (SCREEN_W, SCREEN_H))) {
+    if ((bmp_buff = create_bitmap(SCREEN_W, SCREEN_H))) {
       int a;
-      blit (screen, bmp_orig, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+      blit(screen, bmp_orig, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
 
       if (speed <= 0)
         speed = 16;
 
       for (a = 255 - speed; a > 0; a -= speed) {
-        clear (bmp_buff);
-        set_trans_blender (0, 0, 0, a);
-        draw_trans_sprite (bmp_buff, bmp_orig, 0, 0);
+        clear(bmp_buff);
+        set_trans_blender(0, 0, 0, a);
+        draw_trans_sprite(bmp_buff, bmp_orig, 0, 0);
         vsync();
-        blit (bmp_buff, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+        blit(bmp_buff, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
       }
 
-      destroy_bitmap (bmp_buff);
+      destroy_bitmap(bmp_buff);
     }
 
-    destroy_bitmap (bmp_orig);
+    destroy_bitmap(bmp_orig);
   }
 
-  rectfill (screen, 0, 0, SCREEN_W, SCREEN_H, makecol (0, 0, 0));
+  rectfill(screen, 0, 0, SCREEN_W, SCREEN_H, makecol(0, 0, 0));
 }
 
-void setupGame (bool first) {
+void setupGame(bool first) {
   won = 0;
   haveBroom = 0;
   x = 40;
@@ -231,124 +260,129 @@ void setupGame (bool first) {
     gameScreen = 0;
     currentLevel = 1;
     score = 0;
-    buffer = create_bitmap (1280, 960);
+    buffer = create_bitmap(1280, 960);
     exitGame = false;
     levelText = "";
 
     if (perspective == 0) {
-      character[0] = load_png ("images/blocks/3d/character_down.png", nullptr);
-      character[1] = load_png ("images/blocks/3d/character_up.png", nullptr);
-      character[2] = load_png ("images/blocks/3d/character_left.png", nullptr);
-      character[3] = load_png ("images/blocks/3d/character_right.png", nullptr);
+      character[0] = load_png("images/blocks/3d/character_down.png", nullptr);
+      character[1] = load_png("images/blocks/3d/character_up.png", nullptr);
+      character[2] = load_png("images/blocks/3d/character_left.png", nullptr);
+      character[3] = load_png("images/blocks/3d/character_right.png", nullptr);
 
-      wall = load_png ("images/blocks/3d/wall.png", nullptr);
-      wall2 = load_png ("images/blocks/3d/wall2.png", nullptr);
-      robot = load_png ("images/blocks/3d/robot.png", nullptr);
-      box = load_png ("images/blocks/3d/box.png", nullptr);
-      scrap = load_png ("images/blocks/3d/scrap.png", nullptr);
-      broom = load_png ("images/blocks/3d/broom.png", nullptr);
-      garbagecan = load_png ("images/blocks/3d/garbagecan.png", nullptr);
-      janitorroom = load_png ("images/blocks/3d/janitor_room.png", nullptr);
-      janitorroomopen = load_png ("images/blocks/3d/janitor_room_open.png", nullptr);
-      wood_floor = load_png ("images/blocks/3d/wood_floor.png", nullptr);
+      wall = load_png("images/blocks/3d/wall.png", nullptr);
+      wall2 = load_png("images/blocks/3d/wall2.png", nullptr);
+      robot = load_png("images/blocks/3d/robot.png", nullptr);
+      box = load_png("images/blocks/3d/box.png", nullptr);
+      scrap = load_png("images/blocks/3d/scrap.png", nullptr);
+      broom = load_png("images/blocks/3d/broom.png", nullptr);
+      garbagecan = load_png("images/blocks/3d/garbagecan.png", nullptr);
+      janitorroom = load_png("images/blocks/3d/janitor_room.png", nullptr);
+      janitorroomopen =
+          load_png("images/blocks/3d/janitor_room_open.png", nullptr);
+      wood_floor = load_png("images/blocks/3d/wood_floor.png", nullptr);
     }
 
     if (perspective == 1) {
-      character[0] = load_png ("images/blocks/2d/character.png", nullptr);
-      character[1] = load_png ("images/blocks/2d/character.png", nullptr);
-      character[2] = load_png ("images/blocks/2d/character.png", nullptr);
-      character[3] = load_png ("images/blocks/2d/character.png", nullptr);
+      character[0] = load_png("images/blocks/2d/character.png", nullptr);
+      character[1] = load_png("images/blocks/2d/character.png", nullptr);
+      character[2] = load_png("images/blocks/2d/character.png", nullptr);
+      character[3] = load_png("images/blocks/2d/character.png", nullptr);
 
-      wall = load_png ("images/blocks/2d/wall.png", nullptr);
-      wall2 = load_png ("images/blocks/2d/wall2.png", nullptr);
-      robot = load_png ("images/blocks/2d/robot.png", nullptr);
-      box = load_png ("images/blocks/2d/box.png", nullptr);
-      scrap = load_png ("images/blocks/2d/scrap.png", nullptr);
-      broom = load_png ("images/blocks/2d/broom.png", nullptr);
-      garbagecan = load_png ("images/blocks/2d/garbagecan.png", nullptr);
-      janitorroom = load_png ("images/blocks/2d/janitor_room.png", nullptr);
-      janitorroomopen = load_png ("images/blocks/2d/janitor_room_open.png", nullptr);
-      wood_floor = load_png ("images/blocks/2d/wood_floor.png", nullptr);
+      wall = load_png("images/blocks/2d/wall.png", nullptr);
+      wall2 = load_png("images/blocks/2d/wall2.png", nullptr);
+      robot = load_png("images/blocks/2d/robot.png", nullptr);
+      box = load_png("images/blocks/2d/box.png", nullptr);
+      scrap = load_png("images/blocks/2d/scrap.png", nullptr);
+      broom = load_png("images/blocks/2d/broom.png", nullptr);
+      garbagecan = load_png("images/blocks/2d/garbagecan.png", nullptr);
+      janitorroom = load_png("images/blocks/2d/janitor_room.png", nullptr);
+      janitorroomopen =
+          load_png("images/blocks/2d/janitor_room_open.png", nullptr);
+      wood_floor = load_png("images/blocks/2d/wood_floor.png", nullptr);
     }
 
-    menu = load_png ("images/menu.png", nullptr);
-    background = load_png ("images/background.png", nullptr);
-    help_menu = load_png ("images/help.png", nullptr);
-    intro = load_png ("images/intro.png", nullptr);
-    splash = load_png ("images/splash.png", nullptr);
-    winscreen = load_png ("images/winscreen.png", nullptr);
-    levelSelect = load_png ("images/levelSelect.png", nullptr);
-    levelSelectLeft = load_png ("images/levelSelectLeft.png", nullptr);
-    levelSelectRight = load_png ("images/levelSelectRight.png", nullptr);
+    menu = load_png("images/menu.png", nullptr);
+    background = load_png("images/background.png", nullptr);
+    help_menu = load_png("images/help.png", nullptr);
+    intro = load_png("images/intro.png", nullptr);
+    splash = load_png("images/splash.png", nullptr);
+    winscreen = load_png("images/winscreen.png", nullptr);
+    levelSelect = load_png("images/levelSelect.png", nullptr);
+    levelSelectLeft = load_png("images/levelSelectLeft.png", nullptr);
+    levelSelectRight = load_png("images/levelSelectRight.png", nullptr);
 
     // Sounds and music
-    sweep = load_sample ("sfx/sweep.wav");
-    explode = load_sample ("sfx/explode.wav");
-    trash = load_sample ("sfx/trash.wav");
-    oof = load_sample ("sfx/oof.wav");
-    winsound = load_sample ("sfx/winsound.wav");
-    door = load_sample ("sfx/door.wav");
-    hitwall = load_sample ("sfx/hitwall.wav");
-    boxhitwall = load_sample ("sfx/boxhitwall.wav");
-    boxslide = load_sample ("sfx/boxslide.wav");
-    click = load_sample ("sfx/click.wav");
+    sweep = load_sample("sfx/sweep.wav");
+    explode = load_sample("sfx/explode.wav");
+    trash = load_sample("sfx/trash.wav");
+    oof = load_sample("sfx/oof.wav");
+    winsound = load_sample("sfx/winsound.wav");
+    door = load_sample("sfx/door.wav");
+    hitwall = load_sample("sfx/hitwall.wav");
+    boxhitwall = load_sample("sfx/boxhitwall.wav");
+    boxslide = load_sample("sfx/boxslide.wav");
+    click = load_sample("sfx/click.wav");
 
-    song = logg_load ("sfx/music.ogg");
+    song = logg_load("sfx/music.ogg");
 
-    srand (time (nullptr));
+    srand(time(nullptr));
 
     // Sets button images
-    start.SetImages ("images/buttons/start.png", "images/buttons/start_hover.png");
-    help.SetImages ("images/buttons/help.png", "images/buttons/help_hover.png");
-    quit.SetImages ("images/buttons/quit.png", "images/buttons/quit_hover.png");
-    mode.SetImages ("images/buttons/mode_3d.png", "images/buttons/mode_3d_hover.png");
-    back.SetImages ("images/buttons/back.png", "images/buttons/back_hover.png");
+    start.SetImages("images/buttons/start.png",
+                    "images/buttons/start_hover.png");
+    help.SetImages("images/buttons/help.png", "images/buttons/help_hover.png");
+    quit.SetImages("images/buttons/quit.png", "images/buttons/quit_hover.png");
+    mode.SetImages("images/buttons/mode_3d.png",
+                   "images/buttons/mode_3d_hover.png");
+    back.SetImages("images/buttons/back.png", "images/buttons/back_hover.png");
 
     // Sets button positions
-    start.SetX (380);
-    help.SetX (380);
-    quit.SetX (380);
-    mode.SetX (380);
-    back.SetX (380);
+    start.SetX(380);
+    help.SetX(380);
+    quit.SetX(380);
+    mode.SetX(380);
+    back.SetX(380);
 
-    start.SetY (240);
-    help.SetY (380);
-    quit.SetY (520);
-    mode.SetY (660);
-    back.SetY (40);
+    start.SetY(240);
+    help.SetY(380);
+    quit.SetY(520);
+    mode.SetY(660);
+    back.SetY(40);
 
     // Sets Cursors
-    cursor[0] = load_png ("images/cursor1.png", nullptr);
-    cursor[1] = load_png ("images/cursor2.png", nullptr);
+    cursor[0] = load_png("images/cursor1.png", nullptr);
+    cursor[1] = load_png("images/cursor2.png", nullptr);
 
     // Sets time
     startTime = clock();
     currentTime = clock();
 
     // Sets Font
-    f1 = load_font ("fonts/arial_black.pcx", nullptr, nullptr);
-    f2 = extract_font_range (f1, ' ', 'A' - 1);
-    f3 = extract_font_range (f1, 'A', 'Z');
-    f4 = extract_font_range (f1, 'Z' + 1, 'z');
+    f1 = load_font("fonts/arial_black.pcx", nullptr, nullptr);
+    f2 = extract_font_range(f1, ' ', 'A' - 1);
+    f3 = extract_font_range(f1, 'A', 'Z');
+    f4 = extract_font_range(f1, 'Z' + 1, 'z');
 
     // Merge fonts
-    font = merge_fonts (f4, f5 = merge_fonts (f2, f3));
+    font = merge_fonts(f4, f5 = merge_fonts(f2, f3));
 
     // Destroy temporary fonts
-    destroy_font (f1);
-    destroy_font (f2);
-    destroy_font (f3);
-    destroy_font (f4);
-    destroy_font (f5);
+    destroy_font(f1);
+    destroy_font(f2);
+    destroy_font(f3);
+    destroy_font(f4);
+    destroy_font(f5);
   }
 
   // Background Music
-  play_sample (song, 255, 128, 1000, 1);
+  if (first) {
+    play_sample(song, 255, 128, 1000, 1);
+  }
 }
 
-
 // Update Blocks
-void resetBlocks (int newI, int newT) {
+void resetBlocks(int newI, int newT) {
   // Assign images to data values
   for (int i = 0; i < 24; i++) {
     for (int t = 0; t < 32; t++) {
@@ -361,53 +395,43 @@ void resetBlocks (int newI, int newT) {
         tiles[i][t].image[0] = NULL;
         tiles[i][t].image[1] = NULL;
         tiles[i][t].type = AIR;
-      }
-      else if (tiles[i][t].value == 1) {
+      } else if (tiles[i][t].value == 1) {
         tiles[i][t].image[0] = robot;
         tiles[i][t].image[1] = NULL;
         tiles[i][t].type = ENEMY;
-      }
-      else if (tiles[i][t].value == 2) {
+      } else if (tiles[i][t].value == 2) {
         tiles[i][t].image[0] = box;
         tiles[i][t].image[1] = NULL;
         tiles[i][t].type = PUSHABLE;
-      }
-      else if (tiles[i][t].value == 3) {
+      } else if (tiles[i][t].value == 3) {
         tiles[i][t].image[0] = scrap;
         tiles[i][t].image[1] = NULL;
         tiles[i][t].type = SOLID;
-      }
-      else if (tiles[i][t].value == 4) {
+      } else if (tiles[i][t].value == 4) {
         tiles[i][t].image[0] = NULL;
         tiles[i][t].image[1] = NULL;
         tiles[i][t].type = AIR;
-      }
-      else if (tiles[i][t].value == 5) {
+      } else if (tiles[i][t].value == 5) {
         tiles[i][t].image[0] = wall;
         tiles[i][t].image[1] = NULL;
         tiles[i][t].type = SOLID;
-      }
-      else if (tiles[i][t].value == 6) {
+      } else if (tiles[i][t].value == 6) {
         tiles[i][t].image[0] = garbagecan;
         tiles[i][t].image[1] = NULL;
         tiles[i][t].type = SOLID;
-      }
-      else if (tiles[i][t].value == 7) {
+      } else if (tiles[i][t].value == 7) {
         tiles[i][t].image[0] = janitorroom;
         tiles[i][t].image[1] = NULL;
         tiles[i][t].type = SOLID;
-      }
-      else if (tiles[i][t].value == 8) {
+      } else if (tiles[i][t].value == 8) {
         tiles[i][t].image[0] = wall2;
         tiles[i][t].image[1] = NULL;
         tiles[i][t].type = SOLID;
-      }
-      else if (tiles[i][t].value == 9) {
+      } else if (tiles[i][t].value == 9) {
         tiles[i][t].image[0] = janitorroomopen;
         tiles[i][t].image[1] = NULL;
         tiles[i][t].type = SOLID;
-      }
-      else {
+      } else {
         tiles[i][t].image[0] = NULL;
         tiles[i][t].image[1] = NULL;
         tiles[i][t].type = AIR;
@@ -424,97 +448,96 @@ void resetBlocks (int newI, int newT) {
   }
 }
 
-//Controls Character Movements
+// Controls Character Movements
 void charactermove() {
   if (key[KEY_UP] || key[KEY_W] || joy[0].stick[0].axis[1].d1) {
     characterRotation = 128;
 
     if (tiles[y / 40 - 1][x / 40].type == AIR) {
       y -= 40;
-    }
-    else if (tiles[y / 40 - 1][x / 40].type == SOLID && tiles[y / 40 - 1][x / 40].value != 7 && tiles[y / 40 - 1][x / 40].value != 9 && tiles[y / 40 - 1][x / 40].value != 3) {
-      play_sample (hitwall, 255, 122, 1000, 0);
-    }
-    else if (tiles[y / 40 - 1][x / 40].type == PUSHABLE && tiles[y / 40 - 2][x / 40].type == AIR) {
-      play_sample (boxslide, 255, 122, 1000, 0);
+    } else if (tiles[y / 40 - 1][x / 40].type == SOLID &&
+               tiles[y / 40 - 1][x / 40].value != 7 &&
+               tiles[y / 40 - 1][x / 40].value != 9 &&
+               tiles[y / 40 - 1][x / 40].value != 3) {
+      play_sample(hitwall, 255, 122, 1000, 0);
+    } else if (tiles[y / 40 - 1][x / 40].type == PUSHABLE &&
+               tiles[y / 40 - 2][x / 40].type == AIR) {
+      play_sample(boxslide, 255, 122, 1000, 0);
       tiles[y / 40 - 2][x / 40].value = tiles[y / 40 - 1][x / 40].value;
       tiles[y / 40 - 1][x / 40].value = 0;
       y -= 40;
-    }
-    else if (tiles[y / 40 - 1][x / 40].type == PUSHABLE && tiles[y / 40 - 2][x / 40].type != AIR) {
+    } else if (tiles[y / 40 - 1][x / 40].type == PUSHABLE &&
+               tiles[y / 40 - 2][x / 40].type != AIR) {
       if (tiles[y / 40 - 2][x / 40].type == ENEMY) {
-        play_sample (explode, 255, 122, 1000, 0);
+        play_sample(explode, 255, 122, 1000, 0);
         tiles[y / 40 - 2][x / 40].value = 3;
         score += 100;
+      } else {
+        play_sample(boxhitwall, 255, 122, 1000, 0);
       }
-      else {
-        play_sample (boxhitwall, 255, 122, 1000, 0);
-      }
-    }
-    else if (key[KEY_SPACE] && tiles[y / 40 - 1][x / 40].value == 3 && haveBroom) {
+    } else if (key[KEY_SPACE] && tiles[y / 40 - 1][x / 40].value == 3 &&
+               haveBroom) {
       if (tiles[y / 40 - 2][x / 40].type == AIR) {
         tiles[y / 40 - 2][x / 40].value = tiles[y / 40 - 1][x / 40].value;
         tiles[y / 40 - 1][x / 40].value = 0;
-      }
-      else if (tiles[y / 40 - 2][x / 40].value == 6) {
+      } else if (tiles[y / 40 - 2][x / 40].value == 6) {
         score += 50;
 
         if (robotsLeft > 0) {
           robotsLeft -= 1;
         }
 
-        play_sample (trash, 255, 122, 1000, 0);
+        play_sample(trash, 255, 122, 1000, 0);
         tiles[y / 40 - 1][x / 40].value = 0;
       }
 
-      play_sample (sweep, 1000, 122, 1000, 0);
-    }
-    else if (tiles[y / 40 - 1][x / 40].value == 7) {
+      play_sample(sweep, 1000, 122, 1000, 0);
+    } else if (tiles[y / 40 - 1][x / 40].value == 7) {
       if (!haveBroom) {
         tiles[y / 40 - 1][x / 40].value = 9;
-        play_sample (door, 255, 122, 1000, 0);
+        play_sample(door, 255, 122, 1000, 0);
         haveBroom = true;
       }
-    }
-    else if (tiles[y / 40 - 1][x / 40].value == 9) {
+    } else if (tiles[y / 40 - 1][x / 40].value == 9) {
       if (robotsLeft == 0) {
         doneLevel = 1;
       }
     }
   }
-
 
   if (key[KEY_DOWN] || key[KEY_S] || joy[0].stick[0].axis[1].d2) {
     characterRotation = 0;
 
-    if (tiles[y / 40 + 1][x / 40].value == 0 || tiles[y / 40 + 1][x / 40].value == 8) {
+    if (tiles[y / 40 + 1][x / 40].value == 0 ||
+        tiles[y / 40 + 1][x / 40].value == 8) {
       y = y + 40;
-    }
-    else if (tiles[y / 40 + 1][x / 40].value == 5) {
-      play_sample (hitwall, 255, 122, 1000, 0);
-    }
-    else if (tiles[y / 40 + 1][x / 40].value == 2 && tiles[y / 40 + 2][x / 40].value == 0) {
-      play_sample (boxslide, 255, 122, 1000, 0);
+    } else if (tiles[y / 40 + 1][x / 40].value == 5) {
+      play_sample(hitwall, 255, 122, 1000, 0);
+    } else if (tiles[y / 40 + 1][x / 40].value == 2 &&
+               tiles[y / 40 + 2][x / 40].value == 0) {
+      play_sample(boxslide, 255, 122, 1000, 0);
       tiles[y / 40 + 1][x / 40].value = 0;
       tiles[y / 40 + 2][x / 40].value = 2;
       y = y + 40;
-    }
-    else if (tiles[y / 40 + 1][x / 40].value == 2 && tiles[y / 40 + 2][x / 40].value != 0) {
-      if (tiles[y / 40 + 1][x / 40].value == 2 && tiles[y / 40 + 2][x / 40].value == 1) {
-        play_sample (explode, 255, 122, 1000, 0);
+    } else if (tiles[y / 40 + 1][x / 40].value == 2 &&
+               tiles[y / 40 + 2][x / 40].value != 0) {
+      if (tiles[y / 40 + 1][x / 40].value == 2 &&
+          tiles[y / 40 + 2][x / 40].value == 1) {
+        play_sample(explode, 255, 122, 1000, 0);
         tiles[y / 40 + 2][x / 40].value = 3;
         score += 100;
+      } else {
+        play_sample(boxhitwall, 255, 122, 1000, 0);
       }
-      else {
-        play_sample (boxhitwall, 255, 122, 1000, 0);
-      }
-    }
-    else if (tiles[y / 40 + 1][x / 40].value == 3 && tiles[y / 40 + 2][x / 40].value == 0 && haveBroom == 1 && (key[KEY_SPACE] || joy[0].button[0].b)) {
+    } else if (tiles[y / 40 + 1][x / 40].value == 3 &&
+               tiles[y / 40 + 2][x / 40].value == 0 && haveBroom == 1 &&
+               (key[KEY_SPACE] || joy[0].button[0].b)) {
       tiles[y / 40 + 1][x / 40].value = 0;
       tiles[y / 40 + 2][x / 40].value = 3;
-      play_sample (sweep, 1000, 122, 1000, 0);
-    }
-    else if (tiles[y / 40 + 1][x / 40].value == 3 && tiles[y / 40 + 2][x / 40].value == 6 && haveBroom == 1 && (key[KEY_SPACE] || joy[0].button[0].b)) {
+      play_sample(sweep, 1000, 122, 1000, 0);
+    } else if (tiles[y / 40 + 1][x / 40].value == 3 &&
+               tiles[y / 40 + 2][x / 40].value == 6 && haveBroom == 1 &&
+               (key[KEY_SPACE] || joy[0].button[0].b)) {
       tiles[y / 40 + 1][x / 40].value = 0;
       score += 50;
 
@@ -522,55 +545,54 @@ void charactermove() {
         robotsLeft -= 1;
       }
 
-      play_sample (sweep, 1000, 122, 1000, 0);
-      play_sample (trash, 255, 122, 1000, 0);
-    }
-    else if (tiles[y / 40 + 1][x / 40].value == 7) {
+      play_sample(sweep, 1000, 122, 1000, 0);
+      play_sample(trash, 255, 122, 1000, 0);
+    } else if (tiles[y / 40 + 1][x / 40].value == 7) {
       if (!haveBroom) {
         tiles[y / 40 + 1][x / 40].value = 9;
-        play_sample (door, 255, 122, 1000, 0);
+        play_sample(door, 255, 122, 1000, 0);
         haveBroom = true;
       }
-    }
-    else if (tiles[y / 40 + 1][x / 40].value == 9) {
+    } else if (tiles[y / 40 + 1][x / 40].value == 9) {
       if (robotsLeft == 0) {
         doneLevel = 1;
       }
     }
   }
-
 
   if (key[KEY_LEFT] || key[KEY_A] || joy[0].stick[0].axis[0].d1) {
     characterRotation = 64;
 
-    if (tiles[y / 40][x / 40 - 1].value == 0 || tiles[y / 40][x / 40 - 1].value == 8) {
+    if (tiles[y / 40][x / 40 - 1].value == 0 ||
+        tiles[y / 40][x / 40 - 1].value == 8) {
       x = x - 40;
-    }
-    else if (tiles[y / 40][x / 40 - 1].value == 5) {
-      play_sample (hitwall, 255, 122, 1000, 0);
-    }
-    else if (tiles[y / 40][x / 40 - 1].value == 2 && tiles[y / 40][x / 40 - 2].value == 0) {
-      play_sample (boxslide, 255, 122, 1000, 0);
+    } else if (tiles[y / 40][x / 40 - 1].value == 5) {
+      play_sample(hitwall, 255, 122, 1000, 0);
+    } else if (tiles[y / 40][x / 40 - 1].value == 2 &&
+               tiles[y / 40][x / 40 - 2].value == 0) {
+      play_sample(boxslide, 255, 122, 1000, 0);
       tiles[y / 40][x / 40 - 1].value = 0;
       tiles[y / 40][x / 40 - 2].value = 2;
       x = x - 40;
-    }
-    else if (tiles[y / 40][x / 40 - 1].value == 2 && tiles[y / 40][x / 40 - 2].value != 0) {
-      if (tiles[y / 40][x / 40 - 1].value == 2 && tiles[y / 40][x / 40 - 2].value == 1) {
-        play_sample (explode, 255, 122, 1000, 0);
+    } else if (tiles[y / 40][x / 40 - 1].value == 2 &&
+               tiles[y / 40][x / 40 - 2].value != 0) {
+      if (tiles[y / 40][x / 40 - 1].value == 2 &&
+          tiles[y / 40][x / 40 - 2].value == 1) {
+        play_sample(explode, 255, 122, 1000, 0);
         tiles[y / 40][x / 40 - 2].value = 3;
         score += 100;
+      } else {
+        play_sample(boxhitwall, 255, 122, 1000, 0);
       }
-      else {
-        play_sample (boxhitwall, 255, 122, 1000, 0);
-      }
-    }
-    else if (tiles[y / 40][x / 40 - 1].value == 3 && tiles[y / 40][x / 40 - 2].value == 0 && haveBroom == 1 && (key[KEY_SPACE] || joy[0].button[0].b)) {
+    } else if (tiles[y / 40][x / 40 - 1].value == 3 &&
+               tiles[y / 40][x / 40 - 2].value == 0 && haveBroom == 1 &&
+               (key[KEY_SPACE] || joy[0].button[0].b)) {
       tiles[y / 40][x / 40 - 1].value = 0;
       tiles[y / 40][x / 40 - 2].value = 3;
-      play_sample (sweep, 1000, 122, 1000, 0);
-    }
-    else if (tiles[y / 40][x / 40 - 1].value == 3 && tiles[y / 40][x / 40 - 2].value == 6 && haveBroom == 1 && (key[KEY_SPACE] || joy[0].button[0].b)) {
+      play_sample(sweep, 1000, 122, 1000, 0);
+    } else if (tiles[y / 40][x / 40 - 1].value == 3 &&
+               tiles[y / 40][x / 40 - 2].value == 6 && haveBroom == 1 &&
+               (key[KEY_SPACE] || joy[0].button[0].b)) {
       tiles[y / 40][x / 40 - 1].value = 0;
       score += 50;
 
@@ -578,55 +600,54 @@ void charactermove() {
         robotsLeft -= 1;
       }
 
-      play_sample (sweep, 1000, 122, 1000, 0);
-      play_sample (trash, 255, 122, 1000, 0);
-    }
-    else if (tiles[y / 40][x / 40 - 1].value == 7) {
+      play_sample(sweep, 1000, 122, 1000, 0);
+      play_sample(trash, 255, 122, 1000, 0);
+    } else if (tiles[y / 40][x / 40 - 1].value == 7) {
       if (!haveBroom) {
         tiles[y / 40][x / 40 - 1].value = 9;
-        play_sample (door, 255, 122, 1000, 0);
+        play_sample(door, 255, 122, 1000, 0);
         haveBroom = true;
       }
-    }
-    else if (tiles[y / 40][x / 40 - 1].value == 9) {
+    } else if (tiles[y / 40][x / 40 - 1].value == 9) {
       if (robotsLeft == 0) {
         doneLevel = 1;
       }
     }
   }
 
-
   if (key[KEY_RIGHT] || key[KEY_D] || joy[0].stick[0].axis[0].d2) {
     characterRotation = 192;
 
-    if (tiles[y / 40][x / 40 + 1].value == 0 || tiles[y / 40][x / 40 + 1].value == 8) {
+    if (tiles[y / 40][x / 40 + 1].value == 0 ||
+        tiles[y / 40][x / 40 + 1].value == 8) {
       x = x + 40;
-    }
-    else if (tiles[y / 40][x / 40 + 1].value == 5) {
-      play_sample (hitwall, 255, 122, 1000, 0);
-    }
-    else if (tiles[y / 40][x / 40 + 1].value == 2 && tiles[y / 40][x / 40 + 2].value == 0) {
-      play_sample (boxslide, 255, 122, 1000, 0);
+    } else if (tiles[y / 40][x / 40 + 1].value == 5) {
+      play_sample(hitwall, 255, 122, 1000, 0);
+    } else if (tiles[y / 40][x / 40 + 1].value == 2 &&
+               tiles[y / 40][x / 40 + 2].value == 0) {
+      play_sample(boxslide, 255, 122, 1000, 0);
       tiles[y / 40][x / 40 + 1].value = 0;
       tiles[y / 40][x / 40 + 2].value = 2;
       x = x + 40;
-    }
-    else if (tiles[y / 40][x / 40 + 1].value == 2 && tiles[y / 40][x / 40 + 2].value != 0) {
-      if (tiles[y / 40][x / 40 + 1].value == 2 && tiles[y / 40][x / 40 + 2].value == 1) {
-        play_sample (explode, 255, 122, 1000, 0);
+    } else if (tiles[y / 40][x / 40 + 1].value == 2 &&
+               tiles[y / 40][x / 40 + 2].value != 0) {
+      if (tiles[y / 40][x / 40 + 1].value == 2 &&
+          tiles[y / 40][x / 40 + 2].value == 1) {
+        play_sample(explode, 255, 122, 1000, 0);
         tiles[y / 40][x / 40 + 2].value = 3;
         score += 100;
+      } else {
+        play_sample(boxhitwall, 255, 122, 1000, 0);
       }
-      else {
-        play_sample (boxhitwall, 255, 122, 1000, 0);
-      }
-    }
-    else if (tiles[y / 40][x / 40 + 1].value == 3 && tiles[y / 40][x / 40 + 2].value == 0 && haveBroom == 1 && (key[KEY_SPACE] || joy[0].button[0].b)) {
+    } else if (tiles[y / 40][x / 40 + 1].value == 3 &&
+               tiles[y / 40][x / 40 + 2].value == 0 && haveBroom == 1 &&
+               (key[KEY_SPACE] || joy[0].button[0].b)) {
       tiles[y / 40][x / 40 + 1].value = 0;
       tiles[y / 40][x / 40 + 2].value = 3;
-      play_sample (sweep, 1000, 122, 1000, 0);
-    }
-    else if (tiles[y / 40][x / 40 + 1].value == 3 && tiles[y / 40][x / 40 + 2].value == 6 &&  haveBroom == 1 && (key[KEY_SPACE] || joy[0].button[0].b)) {
+      play_sample(sweep, 1000, 122, 1000, 0);
+    } else if (tiles[y / 40][x / 40 + 1].value == 3 &&
+               tiles[y / 40][x / 40 + 2].value == 6 && haveBroom == 1 &&
+               (key[KEY_SPACE] || joy[0].button[0].b)) {
       tiles[y / 40][x / 40 + 1].value = 0;
       score += 50;
 
@@ -634,17 +655,15 @@ void charactermove() {
         robotsLeft -= 1;
       }
 
-      play_sample (sweep, 1000, 122, 1000, 0);
-      play_sample (trash, 255, 122, 1000, 0);
-    }
-    else if (tiles[y / 40][x / 40 + 1].value == 7) {
+      play_sample(sweep, 1000, 122, 1000, 0);
+      play_sample(trash, 255, 122, 1000, 0);
+    } else if (tiles[y / 40][x / 40 + 1].value == 7) {
       if (!haveBroom) {
-        play_sample (door, 255, 122, 1000, 0);
+        play_sample(door, 255, 122, 1000, 0);
         haveBroom = 1;
         tiles[y / 40][x / 40 + 1].value = 9;
       }
-    }
-    else if (tiles[y / 40][x / 40 + 1].value == 9) {
+    } else if (tiles[y / 40][x / 40 + 1].value == 9) {
       if (robotsLeft == 0) {
         doneLevel = 1;
       }
@@ -654,9 +673,9 @@ void charactermove() {
   mousePressed = false;
 }
 
-//Change tiles
+// Change tiles
 void changeMap() {
-  finalFile = "levels/level" + convertInt (currentLevel) + ".map";
+  finalFile = "levels/level" + convertInt(currentLevel) + ".map";
 
   doneLevel = 0;
   haveBroom = 0;
@@ -666,46 +685,37 @@ void changeMap() {
   if (currentLevel == 1) {
     robotsLeft = 3;
     levelText = "Welcome to the maze";
-  }
-  else if (currentLevel == 2) {
+  } else if (currentLevel == 2) {
     robotsLeft = 6;
     levelText = "Boxed in";
-  }
-  else if (currentLevel == 3) {
+  } else if (currentLevel == 3) {
     robotsLeft = 6;
     levelText = "Rooms";
-  }
-  else if (currentLevel == 4) {
+  } else if (currentLevel == 4) {
     robotsLeft = 2;
     levelText = "Think, then act";
-  }
-  else if (currentLevel == 5) {
+  } else if (currentLevel == 5) {
     robotsLeft = 1;
     levelText = "A new secret";
-  }
-  else if (currentLevel == 6) {
+  } else if (currentLevel == 6) {
     robotsLeft = 2;
     levelText = "Don't worry";
-  }
-  else if (currentLevel == 7) {
+  } else if (currentLevel == 7) {
     robotsLeft = 4;
     levelText = "The Box";
-  }
-  else if (currentLevel == 8) {
+  } else if (currentLevel == 8) {
     robotsLeft = 0;
     levelText = "Hoarder";
-  }
-  else if (currentLevel == 9) {
+  } else if (currentLevel == 9) {
     robotsLeft = 1;
     levelText = "One Robot";
-  }
-  else {
+  } else {
     robotsLeft = 0;
     levelText = "Custom Level";
   }
 
-  if (fexists (finalFile.c_str())) {
-    std::ifstream read (finalFile.c_str());
+  if (fexists(finalFile.c_str())) {
+    std::ifstream read(finalFile.c_str());
 
     for (int i = 0; i < 24; i++) {
       for (int t = 0; t < 32; t++) {
@@ -714,24 +724,24 @@ void changeMap() {
       }
     }
 
-    resetBlocks (-1, -1);
+    resetBlocks(-1, -1);
 
     if (gameScreen == 3) {
-      textprintf_centre_ex (screen, font, 640, 460, makecol (255, 255, 255), -2, "%s", levelText.c_str());
-      rest (1000);
-      highcolor_fade_out (16);
+      textprintf_centre_ex(screen, font, 640, 460, makecol(255, 255, 255), -2,
+                           "%s", levelText.c_str());
+      rest(1000);
+      highcolor_fade_out(16);
     }
-  }
-  else if (gameScreen == 3) {
-    highcolor_fade_out (16);
+  } else if (gameScreen == 3) {
+    highcolor_fade_out(16);
     gameScreen = 4;
-    highcolor_fade_in (winscreen, 16);
+    highcolor_fade_in(winscreen, 16);
   }
 }
 
-//Updates games
+// Updates games
 void game() {
-  setupGame (true);
+  setupGame(true);
 
   while (!exitGame) {
     // Controller Support
@@ -741,74 +751,72 @@ void game() {
       exitGame = true;
     }
 
-    //Splash
+    // Splash
     if (gameScreen == 0) {
-      highcolor_fade_in (intro, 16);
-      rest (1000);
-      highcolor_fade_out (16);
-      highcolor_fade_in (splash, 16);
-      rest (1000);
-      highcolor_fade_out (16);
+      highcolor_fade_in(intro, 16);
+      rest(1000);
+      highcolor_fade_out(16);
+      highcolor_fade_in(splash, 16);
+      rest(1000);
+      highcolor_fade_out(16);
       gameScreen = 1;
-      highcolor_fade_in (menu, 16);
+      highcolor_fade_in(menu, 16);
     }
 
-    //Menu
+    // Menu
     else if (gameScreen == 1) {
-      //Checks for mouse press
+      // Checks for mouse press
       if (mouse_b & 1) {
         if (start.Hover()) {
-          highcolor_fade_out (16);
+          highcolor_fade_out(16);
           gameScreen = 2;
-          setupGame (false);
-          highcolor_fade_in (levelSelect, 16);
-        }
-        else if (help.Hover()) {
-          highcolor_fade_in (help_menu, 16);
+          setupGame(false);
+          highcolor_fade_in(levelSelect, 16);
+        } else if (help.Hover()) {
+          highcolor_fade_in(help_menu, 16);
 
           do {
-            draw_sprite (buffer, help_menu, 0, 0);
-            draw_sprite (screen, buffer, 0, 0);
-          } while (! (key[KEY_SPACE] || key[KEY_ENTER] || mouse_b & 1 || joy[0].button[1].b || joy[0].button[0].b));
+            draw_sprite(buffer, help_menu, 0, 0);
+            draw_sprite(screen, buffer, 0, 0);
+          } while (!(key[KEY_SPACE] || key[KEY_ENTER] || mouse_b & 1 ||
+                     joy[0].button[1].b || joy[0].button[0].b));
 
-          highcolor_fade_out (16);
-        }
-        else if (quit.Hover()) {
+          highcolor_fade_out(16);
+        } else if (quit.Hover()) {
           exitGame = true;
-        }
-        else if (mode.Hover()) {
+        } else if (mode.Hover()) {
           if (perspective == 0) {
             perspective = 1;
-            setupGame (true);
-            mode.SetImages ("images/buttons/mode_2d.png", "images/buttons/mode_2d_hover.png");
+            setupGame(true);
+            mode.SetImages("images/buttons/mode_2d.png",
+                           "images/buttons/mode_2d_hover.png");
             mouse_b = false;
-          }
-          else if (perspective == 1) {
+          } else if (perspective == 1) {
             perspective = 0;
-            setupGame (true);
-            mode.SetImages ("images/buttons/mode_3d.png", "images/buttons/mode_3d_hover.png");
+            setupGame(true);
+            mode.SetImages("images/buttons/mode_3d.png",
+                           "images/buttons/mode_3d_hover.png");
             mouse_b = false;
           }
         }
       }
 
-      //Draws Menu
-      draw_sprite (buffer, menu, 0, 0);
+      // Draws Menu
+      draw_sprite(buffer, menu, 0, 0);
 
-      //Draws Buttons
-      start.draw (buffer);
-      help.draw (buffer);
-      quit.draw (buffer);
-      mode.draw (buffer);
+      // Draws Buttons
+      start.draw(buffer);
+      help.draw(buffer);
+      quit.draw(buffer);
+      mode.draw(buffer);
 
-      //Draws Cursor
-      draw_sprite (buffer, cursor[0], mouse_x, mouse_y);
+      // Draws Cursor
+      draw_sprite(buffer, cursor[0], mouse_x, mouse_y);
     }
 
-    //Level Select
+    // Level Select
     if (gameScreen == 2) {
-
-      //Change map
+      // Change map
       changeMap();
 
       // Die
@@ -816,119 +824,120 @@ void game() {
         lives -= 1;
         x = 40;
         y = 40;
-        play_sample (oof, 255, 122, 1000, 0);
+        play_sample(oof, 255, 122, 1000, 0);
       }
 
-      //Go to menu
+      // Go to menu
       if (key[KEY_M] || joy[0].button[1].b) {
-        highcolor_fade_out (16);
+        highcolor_fade_out(16);
         gameScreen = 1;
-        highcolor_fade_in (menu, 16);
+        highcolor_fade_in(menu, 16);
       }
 
-      draw_sprite (buffer, levelSelect, 0, 0);
-      back.draw (buffer);
-      stretch_sprite (buffer, background, 320, 220, 640, 480);
-      textprintf_centre_ex (buffer, font, 640, 760, makecol (0, 0, 0), makecol (255, 255, 255), "Level:%i", currentLevel);
+      draw_sprite(buffer, levelSelect, 0, 0);
+      back.draw(buffer);
+      stretch_sprite(buffer, background, 320, 220, 640, 480);
+      textprintf_centre_ex(buffer, font, 640, 760, makecol(0, 0, 0),
+                           makecol(255, 255, 255), "Level:%i", currentLevel);
 
-      //Mini tiles tiles
+      // Mini tiles tiles
       for (int i = 0; i < 24; i++) {
         for (int t = 0; t < 32; t++) {
           if (tiles[i][t].image[0] != NULL && tiles[i][t].value != 1) {
             if (perspective == 0) {
-              stretch_sprite (buffer, tiles[i][t].image[0], t * 20 + 320, i * 20 + 220, 30, 30);
-            }
-            else if (perspective == 1) {
-              stretch_sprite (buffer, tiles[i][t].image[0], t * 20 + 320, i * 20 + 220, 20, 20);
+              stretch_sprite(buffer, tiles[i][t].image[0], t * 20 + 320,
+                             i * 20 + 220, 30, 30);
+            } else if (perspective == 1) {
+              stretch_sprite(buffer, tiles[i][t].image[0], t * 20 + 320,
+                             i * 20 + 220, 20, 20);
             }
           }
         }
       }
 
-      //Click buttons
-      if (collision (mouse_x, mouse_x, -1, 200, mouse_y, mouse_y, 0, 960)) {
-        draw_sprite (buffer, levelSelectLeft, 0, 0);
-        draw_sprite (buffer, cursor[1], mouse_x, mouse_y);
+      // Click buttons
+      if (collision(mouse_x, mouse_x, -1, 200, mouse_y, mouse_y, 0, 960)) {
+        draw_sprite(buffer, levelSelectLeft, 0, 0);
+        draw_sprite(buffer, cursor[1], mouse_x, mouse_y);
 
         if (mouse_b & 1 && currentLevel > 1) {
-          play_sample (click, 255, 125, 1000, 0);
+          play_sample(click, 255, 125, 1000, 0);
           currentLevel -= 1;
-          setupGame (false);
-          rest (140);
+          setupGame(false);
+          rest(140);
         }
-      }
-      else if (collision (mouse_x, mouse_x, 1080, 1280, mouse_y, mouse_y, 0, 960)) {
-        draw_sprite (buffer, levelSelectRight, 1080, 0);
-        draw_sprite (buffer, cursor[1], mouse_x, mouse_y);
+      } else if (collision(mouse_x, mouse_x, 1080, 1280, mouse_y, mouse_y, 0,
+                           960)) {
+        draw_sprite(buffer, levelSelectRight, 1080, 0);
+        draw_sprite(buffer, cursor[1], mouse_x, mouse_y);
 
         if (mouse_b & 1) {
-          finalFile = "levels/level" + convertInt (currentLevel + 1) + ".map";
+          finalFile = "levels/level" + convertInt(currentLevel + 1) + ".map";
 
-          if (fexists (finalFile.c_str())) {
-            play_sample (click, 255, 125, 1000, 0);
+          if (fexists(finalFile.c_str())) {
+            play_sample(click, 255, 125, 1000, 0);
             currentLevel += 1;
-            setupGame (false);
-            rest (140);
+            setupGame(false);
+            rest(140);
           }
         }
-      }
-      else if (collision (mouse_x, mouse_x, 320, 978, mouse_y, mouse_y, 220, 718)) {
-        draw_sprite (buffer, cursor[1], mouse_x, mouse_y);
+      } else if (collision(mouse_x, mouse_x, 320, 978, mouse_y, mouse_y, 220,
+                           718)) {
+        draw_sprite(buffer, cursor[1], mouse_x, mouse_y);
 
         if (mouse_b & 1) {
-          highcolor_fade_out (16);
+          highcolor_fade_out(16);
           gameScreen = 3;
           changeMap();
-          setupGame (false);
+          setupGame(false);
         }
-      }
-      else {
-        draw_sprite (buffer, cursor[0], mouse_x, mouse_y);
+      } else {
+        draw_sprite(buffer, cursor[0], mouse_x, mouse_y);
       }
 
       if (mouse_b & 1 && back.Hover() == true) {
-        highcolor_fade_out (16);
+        highcolor_fade_out(16);
         gameScreen = 1;
-        highcolor_fade_in (menu, 16);
+        highcolor_fade_in(menu, 16);
       }
     }
 
-    //Ingame Loops
+    // Ingame Loops
     if (gameScreen == 3) {
-      //Go to menu
+      // Go to menu
       if (key[KEY_M] || joy[0].button[1].b) {
-        highcolor_fade_out (16);
+        highcolor_fade_out(16);
         gameScreen = 1;
         score = 0;
-        highcolor_fade_in (menu, 16);
+        highcolor_fade_in(menu, 16);
       }
 
-      //Changes move
+      // Changes move
       moving = false;
 
-      //Update Clock
+      // Update Clock
       currentTime = clock();
 
-      //Checks if movther
-      if (int (currentTime - startTime) / CLOCKS_PER_SEC > (elaspedTime)) {
+      // Checks if movther
+      if (int(currentTime - startTime) / CLOCKS_PER_SEC > (elaspedTime)) {
         moving = true;
       }
 
-      //Updates Elasped Time
-      elaspedTime = int (currentTime - startTime) / CLOCKS_PER_SEC;
+      // Updates Elasped Time
+      elaspedTime = int(currentTime - startTime) / CLOCKS_PER_SEC;
 
-      //Draw background
-      draw_sprite (buffer, background, 0, 0);
+      // Draw background
+      draw_sprite(buffer, background, 0, 0);
 
-      //Updates robots positions
+      // Updates robots positions
       if (step % 4 == 0) {
         for (int i = 0; i < 24; i++) {
           for (int t = 0; t < 32; t++) {
-            if (tiles[i][t].value  == 1) {
+            if (tiles[i][t].value == 1) {
               int random_integer;
               int lowest = 0, highest = 5;
               int range = (highest - lowest) + 1;
-              random_integer = lowest + int (range * rand() / (RAND_MAX + 1.0));
+              random_integer = lowest + int(range * rand() / (RAND_MAX + 1.0));
 
               if (random_integer == 1 && tiles[i - 1][t].value == 0) {
                 tiles[i - 1][t].value = 1;
@@ -951,7 +960,7 @@ void game() {
               }
 
               if (i == y / 40 && t == x / 40) {
-                play_sample (oof, 2000, 122, 1000, 0);
+                play_sample(oof, 2000, 122, 1000, 0);
                 lives -= 1;
                 x = 40;
                 y = 40;
@@ -961,21 +970,22 @@ void game() {
         }
       }
 
-      //Restart Map
+      // Restart Map
       if (key[KEY_R] || joy[0].button[2].b) {
-        highcolor_fade_out (16);
+        highcolor_fade_out(16);
         changeMap();
       }
 
-      //Pause Game
+      // Pause Game
       if (key[KEY_P] || joy[0].button[7].b) {
         while (key[KEY_P] || joy[0].button[7].b) {
           poll_joystick();
         }
 
-        while (! (key[KEY_P] || joy[0].button[7].b || key[KEY_ESC])) {
-          textout_ex (buffer, font, "Paused press P to resume", 420, 440, makecol (0, 0, 0), makecol (255, 255, 255));
-          draw_sprite (screen, buffer, 0, 0);
+        while (!(key[KEY_P] || joy[0].button[7].b || key[KEY_ESC])) {
+          textout_ex(buffer, font, "Paused press P to resume", 420, 440,
+                     makecol(0, 0, 0), makecol(255, 255, 255));
+          draw_sprite(screen, buffer, 0, 0);
           poll_joystick();
         }
 
@@ -984,177 +994,178 @@ void game() {
         }
       }
 
-      //Finish Level
+      // Finish Level
       if (doneLevel == 1) {
-        play_sample (winsound, 255, 122, 1000, 0);
+        play_sample(winsound, 255, 122, 1000, 0);
         currentLevel += 1;
         lives += 1;
         changeMap();
       }
 
-      //Die
+      // Die
       if (lives <= 0) {
         changeMap();
         score = 0;
-        setupGame (false);
+        setupGame(false);
       }
 
-      //Draws Tiles
+      // Draws Tiles
       for (int i = 0; i < 24; i++) {
         for (int t = 0; t < 32; t++) {
           if (y / 40 == i && x / 40 == t) {
-            //Draws Character
+            // Draws Character
             if (perspective == 0) {
-              //rotate_sprite(buffer, character, x + 5, y + 5, ftofix(characterRotation));
+              // rotate_sprite(buffer, character, x + 5, y + 5,
+              // ftofix(characterRotation));
               if (characterRotation == 0) {
-                draw_sprite (buffer, character[0], x, y);
+                draw_sprite(buffer, character[0], x, y);
+              } else if (characterRotation == 128) {
+                draw_sprite(buffer, character[1], x, y);
+              } else if (characterRotation == 64) {
+                draw_sprite(buffer, character[2], x, y);
+              } else if (characterRotation == 192) {
+                draw_sprite(buffer, character[3], x, y);
               }
-              else if (characterRotation == 128) {
-                draw_sprite (buffer, character[1], x, y);
-              }
-              else if (characterRotation == 64) {
-                draw_sprite (buffer, character[2], x, y);
-              }
-              else if (characterRotation == 192) {
-                draw_sprite (buffer, character[3], x, y);
-              }
-            }
-            else {
-              draw_sprite (buffer, character[0], x, y);
+            } else {
+              draw_sprite(buffer, character[0], x, y);
             }
 
-            //Draws broom if needed
+            // Draws broom if needed
             if ((key[KEY_SPACE] || joy[0].button[0].b) && haveBroom == 1) {
               if (perspective == 0) {
-                rotate_sprite (buffer, broom, x + 10, y + 10, ftofix (float (characterRotation)));
-              }
-              else {
-                draw_sprite (buffer, broom, x, y);
+                rotate_sprite(buffer, broom, x + 10, y + 10,
+                              ftofix(float(characterRotation)));
+              } else {
+                draw_sprite(buffer, broom, x, y);
               }
             }
           }
 
-          //Reset blocks
+          // Reset blocks
           if (tiles[i][t].value != map[i][t]) {
-            resetBlocks (i, t);
+            resetBlocks(i, t);
           }
 
           map[i][t] = tiles[i][t].value;
 
           if (tiles[i][t].image[0] != NULL) {
             if (perspective == 0) {
-              stretch_sprite (buffer, tiles[i][t].image[0], t * 40, i * 40, 60, 60);
-            }
-            else {
-              stretch_sprite (buffer, tiles[i][t].image[0], t * 40, i * 40, 40, 40);
+              stretch_sprite(buffer, tiles[i][t].image[0], t * 40, i * 40, 60,
+                             60);
+            } else {
+              stretch_sprite(buffer, tiles[i][t].image[0], t * 40, i * 40, 40,
+                             40);
             }
           }
         }
       }
 
-      //Draws Stats
-      textprintf_ex (buffer, font, 0, 0, makecol (0, 0, 0), makecol (255, 255, 255), "Score:%i", score);
-      textprintf_right_ex (buffer, font, 1280, 0, makecol (0, 0, 0), makecol (255, 255, 255), "Robots Left:%i", robotsLeft);
-      textprintf_centre_ex (buffer, font, 640, 0, makecol (0, 0, 0), makecol (255, 255, 255), "Lives:%i", lives);
+      // Draws Stats
+      textprintf_ex(buffer, font, 0, 0, makecol(0, 0, 0),
+                    makecol(255, 255, 255), "Score:%i", score);
+      textprintf_right_ex(buffer, font, 1280, 0, makecol(0, 0, 0),
+                          makecol(255, 255, 255), "Robots Left:%i", robotsLeft);
+      textprintf_centre_ex(buffer, font, 640, 0, makecol(0, 0, 0),
+                           makecol(255, 255, 255), "Lives:%i", lives);
 
-      //Draws Cursor
-      draw_sprite (buffer, cursor[0], (mouse_x / 40) * 40, (mouse_y / 40) * 40);
+      // Draws Cursor
+      draw_sprite(buffer, cursor[0], (mouse_x / 40) * 40, (mouse_y / 40) * 40);
 
-      //Checks for character move
+      // Checks for character move
       charactermove();
 
-      //Rests (regulates game speed)
-      rest (100);
-    }
-    else if (gameScreen == 4) {
-      draw_sprite (buffer, winscreen, 0, 0);
-      textprintf_ex (buffer, font, 310, 400, makecol (0, 0, 0), -1, "%i", score);
+      // Rests (regulates game speed)
+      rest(100);
+    } else if (gameScreen == 4) {
+      draw_sprite(buffer, winscreen, 0, 0);
+      textprintf_ex(buffer, font, 310, 400, makecol(0, 0, 0), -1, "%i", score);
 
-      if (key[KEY_SPACE] || key[KEY_ENTER] || mouse_b & 1  || joy[0].button[0].b) {
-        highcolor_fade_out (16);
+      if (key[KEY_SPACE] || key[KEY_ENTER] || mouse_b & 1 ||
+          joy[0].button[0].b) {
+        highcolor_fade_out(16);
         gameScreen = 1;
-        highcolor_fade_in (winscreen, 16);
+        highcolor_fade_in(winscreen, 16);
       }
     }
 
-    //Adds one to step
+    // Adds one to step
     step++;
 
-    //Draws Buffer
-    draw_sprite (screen, buffer, 0, 0);
+    // Draws Buffer
+    draw_sprite(screen, buffer, 0, 0);
   }
 }
 
 void close() {
   for (int i = 0; i < 4; i++) {
     if (character[i]) {
-      destroy_bitmap (character[i]);
+      destroy_bitmap(character[i]);
     }
   }
 
   for (int i = 0; i < 2; i++) {
     if (cursor[i]) {
-      destroy_bitmap (cursor[i]);
+      destroy_bitmap(cursor[i]);
     }
   }
 
-  destroy_bitmap (buffer);
-  destroy_bitmap (background);
-  destroy_bitmap (robot);
-  destroy_bitmap (wall);
-  destroy_bitmap (fakeWall);
-  destroy_bitmap (ground);
-  destroy_bitmap (box);
-  destroy_bitmap (menu);
-  destroy_bitmap (help_menu);
-  destroy_bitmap (levelSelect);
-  destroy_bitmap (levelSelectLeft);
-  destroy_bitmap (levelSelectRight);
-  destroy_bitmap (winscreen);
-  destroy_bitmap (intro);
-  destroy_bitmap (splash);
-  destroy_bitmap (scrap);
-  destroy_bitmap (broom);
-  destroy_bitmap (garbagecan);
-  destroy_bitmap (janitorroom);
-  destroy_bitmap (janitorroomopen);
-  destroy_bitmap (wall2);
-  destroy_bitmap (wood_floor);
+  destroy_bitmap(buffer);
+  destroy_bitmap(background);
+  destroy_bitmap(robot);
+  destroy_bitmap(wall);
+  destroy_bitmap(fakeWall);
+  destroy_bitmap(ground);
+  destroy_bitmap(box);
+  destroy_bitmap(menu);
+  destroy_bitmap(help_menu);
+  destroy_bitmap(levelSelect);
+  destroy_bitmap(levelSelectLeft);
+  destroy_bitmap(levelSelectRight);
+  destroy_bitmap(winscreen);
+  destroy_bitmap(intro);
+  destroy_bitmap(splash);
+  destroy_bitmap(scrap);
+  destroy_bitmap(broom);
+  destroy_bitmap(garbagecan);
+  destroy_bitmap(janitorroom);
+  destroy_bitmap(janitorroomopen);
+  destroy_bitmap(wall2);
+  destroy_bitmap(wood_floor);
 
-  destroy_sample (hitwall);
-  destroy_sample (boxhitwall);
-  destroy_sample (boxslide);
-  destroy_sample (explode);
-  destroy_sample (sweep);
-  destroy_sample (trash);
-  destroy_sample (oof);
-  destroy_sample (winsound);
-  destroy_sample (door);
-  destroy_sample (click);
+  destroy_sample(hitwall);
+  destroy_sample(boxhitwall);
+  destroy_sample(boxslide);
+  destroy_sample(explode);
+  destroy_sample(sweep);
+  destroy_sample(trash);
+  destroy_sample(oof);
+  destroy_sample(winsound);
+  destroy_sample(door);
+  destroy_sample(click);
 
   // Allegro
   clear_keybuf();
 }
 
-//Main functions run here
+// Main functions run here
 int main() {
-  //Initializing
+  // Initializing
   allegro_init();
   install_timer();
   install_mouse();
-  install_joystick (JOY_TYPE_AUTODETECT);
+  install_joystick(JOY_TYPE_AUTODETECT);
   install_keyboard();
-  set_color_depth (32);
-  set_gfx_mode (GFX_AUTODETECT_WINDOWED, 1280, 960, 0, 0);
-  install_sound (DIGI_AUTODETECT, MIDI_AUTODETECT, ".");
-  set_window_title ("Mazes");
+  set_color_depth(32);
+  set_gfx_mode(GFX_AUTODETECT_WINDOWED, 1280, 960, 0, 0);
+  install_sound(DIGI_AUTODETECT, MIDI_AUTODETECT, ".");
+  set_window_title("Mazes");
 
-  //Starts Game
+  // Starts Game
   game();
 
   close();
 
-  rest (100);
+  rest(100);
 
   return 0;
 }
