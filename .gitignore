@@ -32,7 +32,6 @@ $RECYCLE.BIN/
 # Icon must ends with two \r.
 Icon
 
-
 # Thumbnails
 ._*
 
@@ -50,3 +49,4 @@ bin
 docs
 lib
 build/Mazes*
+_deps
