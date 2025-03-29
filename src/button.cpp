@@ -1,22 +1,16 @@
 #include "button.h"
 
-#include <loadpng.h>
+#include <asw/asw.h>
 
-Button::Button() : x(0), y(0), width(520), height(120) {
-  images[0] = nullptr;
-  images[1] = nullptr;
-}
-
-Button::~Button() {}
-
-void Button::SetImages(const char* image1, const char* image2) {
-  images[0] = load_png(image1, nullptr);
-  images[1] = load_png(image2, nullptr);
+void Button::SetImages(const std::string& image1, const std::string& image2) {
+  images[0] = asw::assets::loadTexture(image1);
+  images[1] = asw::assets::loadTexture(image2);
 }
 
 bool Button::Hover() const {
-  return (mouse_x > GetX() && mouse_x < GetX() + width && mouse_y > GetY() &&
-          mouse_y < GetY() + height);
+  return (
+      asw::input::mouse.x > GetX() && asw::input::mouse.x < GetX() + width &&
+      asw::input::mouse.y > GetY() && asw::input::mouse.y < GetY() + height);
 }
 
 void Button::SetX(int newValue) {
@@ -35,6 +29,7 @@ int Button::GetY() const {
   return y;
 }
 
-void Button::draw(BITMAP* tempBitmap) {
-  draw_sprite(tempBitmap, images[Hover()], GetX(), GetY());
+void Button::draw() {
+  auto frame = Hover() ? 1 : 0;
+  asw::draw::sprite(images[frame], asw::Vec2<float>(x, y));
 }

@@ -1,16 +1,16 @@
-#ifndef BUTTON_H
-#define BUTTON_H
+#pragma once
 
-#include <allegro.h>
+#include <asw/asw.h>
+#include <array>
+#include <string>
 
 class Button {
  public:
-  Button();
-  ~Button();
+  Button() = default;
 
-  void SetImages(const char* image1, const char* image2);
+  void SetImages(const std::string& image1, const std::string& image2);
 
-  void draw(BITMAP* tempBitmap);
+  void draw();
 
   void SetX(int newValue);
   void SetY(int newValue);
@@ -24,10 +24,10 @@ class Button {
   int GetY() const;
 
  private:
-  int x, y;
-  int width, height;
+  int x{0};
+  int y{0};
+  int width{520};
+  int height{120};
 
-  BITMAP* images[2];
+  std::array<asw::Texture, 2> images;
 };
-
-#endif
