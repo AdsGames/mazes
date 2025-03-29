@@ -1,14 +1,14 @@
-#ifndef BLOCK_H
-#define BLOCK_H
+#pragma once
 
-#include <allegro.h>
+#include <asw/asw.h>
+#include <array>
+#include <string>
 
 class Block {
  public:
-  Block();
-  ~Block();
+  Block() = default;
 
-  void SetImages(const char* image1, const char* image2);
+  void SetImages(const std::string& path1, const std::string& path2);
 
   int GetY() const;
   int GetX() const;
@@ -16,19 +16,14 @@ class Block {
   void SetX(int newValue);
   void SetY(int newValue);
 
-  void draw(BITMAP* buffer);
+  void draw();
 
  private:
-  int x, y;
+  int x{0};
+  int y{0};
 
-  int type;
+  int frame{0};
 
-  int frame;
-
-  bool selected;
-
-  BITMAP* images[2];
-  SAMPLE* sound;
+  std::array<asw::Texture, 2> images;
+  asw::Sample sound;
 };
-
-#endif

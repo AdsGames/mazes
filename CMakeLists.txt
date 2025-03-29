@@ -19,15 +19,9 @@ add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic)
 
 FetchContent_Declare(
-  json 
-  URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz
-)
-FetchContent_MakeAvailable(json)
-
-FetchContent_Declare(
   asw
   GIT_REPOSITORY https://github.com/adsgames/asw.git
-  GIT_TAG        v0.5.1
+  GIT_TAG        v0.5.4
 )
 FetchContent_MakeAvailable(asw)
 
@@ -39,7 +33,6 @@ endif(MINGW)
 target_link_libraries(
   ${PROJECT_NAME} 
   asw
-  nlohmann_json::nlohmann_json
 )
 
 # Emscripten support
@@ -58,11 +51,8 @@ if(EMSCRIPTEN)
     ${PROJECT_NAME} 
     PROPERTIES 
     LINK_FLAGS
-    "--preload-file ${CMAKE_CURRENT_LIST_DIR}/assets/data@/data --preload-file ${CMAKE_CURRENT_LIST_DIR}/assets/sounds@/sounds --preload-file ${CMAKE_CURRENT_LIST_DIR}/assets/fonts@/fonts --preload-file ${CMAKE_CURRENT_LIST_DIR}/assets/images@/images --use-preload-plugins --shell-file ${CMAKE_CURRENT_LIST_DIR}/index.html"
+    "--preload-file ${CMAKE_CURRENT_LIST_DIR}/assets@/assets --use-preload-plugins --shell-file ${CMAKE_CURRENT_LIST_DIR}/index.html"
   )
 endif(EMSCRIPTEN)
 
-file(COPY ${CMAKE_CURRENT_LIST_DIR}/assets/data DESTINATION ${CMAKE_BINARY_DIR}/build)
-file(COPY ${CMAKE_CURRENT_LIST_DIR}/assets/fonts DESTINATION ${CMAKE_BINARY_DIR}/build)
-file(COPY ${CMAKE_CURRENT_LIST_DIR}/assets/images DESTINATION ${CMAKE_BINARY_DIR}/build)
-file(COPY ${CMAKE_CURRENT_LIST_DIR}/assets/sounds DESTINATION ${CMAKE_BINARY_DIR}/build)
+file(COPY ${CMAKE_CURRENT_LIST_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR}/build)
