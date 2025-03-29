@@ -65,7 +65,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         uses: adsgames/deploy-to-adsgames@v1.1.2
         with:
-          project-id: jimsalienadventure
+          project-id: mazes
           build-dir: ./build/
           platform: WEB
           bucket-access-key: ${{ secrets.LINODE_BUCKET_ACCESS_KEY }}
