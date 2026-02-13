@@ -2,15 +2,18 @@
 
 #include <asw/asw.h>
 
+using namespace asw::assets;
+using namespace asw::input;
+using namespace asw::draw;
+
 void Button::SetImages(const std::string& image1, const std::string& image2) {
-  images[0] = asw::assets::loadTexture(image1);
-  images[1] = asw::assets::loadTexture(image2);
+  images[0] = loadTexture(image1);
+  images[1] = loadTexture(image2);
 }
 
 bool Button::Hover() const {
-  return (
-      asw::input::mouse.x > GetX() && asw::input::mouse.x < GetX() + width &&
-      asw::input::mouse.y > GetY() && asw::input::mouse.y < GetY() + height);
+  return (mouse.position.x > x && mouse.position.x < x + width &&
+          mouse.position.y > y && mouse.position.y < y + height);
 }
 
 void Button::SetX(int newValue) {
@@ -31,5 +34,5 @@ int Button::GetY() const {
 
 void Button::draw() {
   auto frame = Hover() ? 1 : 0;
-  asw::draw::sprite(images[frame], asw::Vec2<float>(x, y));
+  sprite(images[frame], asw::Vec2<float>(x, y));
 }

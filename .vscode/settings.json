@@ -48,5 +48,6 @@
     "*.tcc": "cpp",
     "cinttypes": "cpp",
     "random": "cpp"
-  }
+  },
+  "sonarlint.pathToCompileCommands": "${workspaceFolder}/build/debug/compile_commands.json"
 }
