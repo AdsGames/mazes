@@ -29,11 +29,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup cache
         uses: actions/cache@v4
         with:
-          path: "_deps"
+          path: "./build/release/_deps"
           key: deps-${{ runner.os }}
 
       - uses: mymindstorm/setup-emsdk@v14
@@ -45,16 +47,19 @@ jobs:
         run: |
           embuilder build harfbuzz
 
-      - name: Run CMake
-        run: emcmake cmake -G "Unix Makefiles" .
+      - name: Configure
+        run: emcmake cmake --preset release
 
-      - name: Make
-        run: emmake make -j4
+      - name: Build
+        run: cmake --build --preset release
+
+      - name: Get the version
+        id: get_version
+        run: echo "VERSION=$(git describe --tags --always)" >> "$GITHUB_OUTPUT"
 
       - uses: actions/upload-pages-artifact@v3
-        if: github.ref == 'refs/heads/main'
         with:
-          path: ./build
+          path: ./build/release/target/
 
       - name: Deploy to GitHub Pages
         if: github.ref == 'refs/heads/main'
@@ -63,10 +68,10 @@ jobs:
 
       - name: Deploy to A.D.S. Games
         if: startsWith(github.ref, 'refs/tags/v')
-        uses: adsgames/deploy-to-adsgames@v1.1.2
+        uses: adsgames/deploy-to-adsgames@v1
         with:
           project-id: mazes
-          build-dir: ./build/
+          build-dir: ./build/release/target/
           platform: WEB
           bucket-access-key: ${{ secrets.LINODE_BUCKET_ACCESS_KEY }}
           bucket-secret-key: ${{ secrets.LINODE_BUCKET_SECRET_KEY }}
