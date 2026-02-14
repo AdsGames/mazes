@@ -8,7 +8,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/target)
 
 include(cmake/get_cpm.cmake)
-CPMAddPackage("gh:adsgames/asw#28dd9c574169ad9cb26321e460e2627e2e78f0f7")
+CPMAddPackage("gh:adsgames/asw#bb2f4430d05f3b9c3cb14944beb7d2266f45dece")
 
 # Source code
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
