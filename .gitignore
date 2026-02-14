@@ -39,15 +39,6 @@ Icon
 .Spotlight-V100
 .Trashes
 
+# Other
 CppCheckResults.xml
-CMakeFiles
-CMakeCache.txt
-Makefile
-*.cmake
-install_manifest.txt
-bin
-docs
-lib
 build/
-_deps/
-compile_commands.json

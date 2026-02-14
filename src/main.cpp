@@ -14,20 +14,23 @@
 #include "./scenes/win.h"
 
 // Main functions run here
-int main() {
-  // Initializing
-  asw::core::init(1280, 960);
-  asw::display::setTitle("Mazes");
+int main()
+{
+    using enum GameState;
 
-  // Starts Game
-  auto app = asw::scene::SceneManager<GameState>();
-  app.registerScene<GameScene>(GameState::Game, app);
-  app.registerScene<MenuScene>(GameState::Menu, app);
-  app.registerScene<WinScene>(GameState::Win, app);
-  app.registerScene<LevelSelectScene>(GameState::LevelSelect, app);
-  app.registerScene<IntroScene>(GameState::Intro, app);
-  app.setNextScene(GameState::Intro);
-  app.start();
+    // Initializing
+    asw::core::init(1280, 960);
+    asw::display::setTitle("Mazes");
 
-  return 0;
+    // Starts Game
+    auto app = asw::scene::SceneManager<GameState>();
+    app.registerScene<GameScene>(Game, app);
+    app.registerScene<MenuScene>(Menu, app);
+    app.registerScene<WinScene>(Win, app);
+    app.registerScene<LevelSelectScene>(LevelSelect, app);
+    app.registerScene<IntroScene>(Intro, app);
+    app.setNextScene(Intro);
+    app.start();
+
+    return 0;
 }
