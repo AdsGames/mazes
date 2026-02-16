@@ -63,25 +63,14 @@ void TileMap::setValue(Tile& tile, int value)
 
 bool TileMap::load(const std::string& filename)
 {
-    if (perspective == 0) {
-        wall = loadTexture("assets/images/blocks/3d/wall.png");
-        wall2 = loadTexture("assets/images/blocks/3d/wall2.png");
-        robot = loadTexture("assets/images/blocks/3d/robot.png");
-        box = loadTexture("assets/images/blocks/3d/box.png");
-        scrap = loadTexture("assets/images/blocks/3d/scrap.png");
-        garbagecan = loadTexture("assets/images/blocks/3d/garbagecan.png");
-        janitorroom = loadTexture("assets/images/blocks/3d/janitor_room.png");
-        janitorroomopen = loadTexture("assets/images/blocks/3d/janitor_room_open.png");
-    } else {
-        wall = loadTexture("assets/images/blocks/2d/wall.png");
-        wall2 = loadTexture("assets/images/blocks/2d/wall2.png");
-        robot = loadTexture("assets/images/blocks/2d/robot.png");
-        box = loadTexture("assets/images/blocks/2d/box.png");
-        scrap = loadTexture("assets/images/blocks/2d/scrap.png");
-        garbagecan = loadTexture("assets/images/blocks/2d/garbagecan.png");
-        janitorroom = loadTexture("assets/images/blocks/2d/janitor_room.png");
-        janitorroomopen = loadTexture("assets/images/blocks/2d/janitor_room_open.png");
-    }
+    wall = loadTexture("assets/images/blocks/wall.png");
+    wall2 = loadTexture("assets/images/blocks/wall2.png");
+    robot = loadTexture("assets/images/blocks/robot.png");
+    box = loadTexture("assets/images/blocks/box.png");
+    scrap = loadTexture("assets/images/blocks/scrap.png");
+    garbagecan = loadTexture("assets/images/blocks/garbagecan.png");
+    janitorroom = loadTexture("assets/images/blocks/janitor_room.png");
+    janitorroomopen = loadTexture("assets/images/blocks/janitor_room_open.png");
 
     std::ifstream read(filename.c_str());
     if (read.fail()) {

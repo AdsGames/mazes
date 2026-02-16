@@ -1,6 +1,9 @@
 #pragma once
 
 #include <asw/asw.h>
+#include <format>
+#include <memory>
+#include <string>
 
 #include "../button.h"
 #include "./scenes.h"
@@ -11,101 +14,67 @@ public:
 
     void init() override
     {
-        // Sets button images
-        btn_start.SetImages(
-            "assets/images/buttons/start.png", "assets/images/buttons/start_hover.png");
-        btn_help.SetImages(
-            "assets/images/buttons/help.png", "assets/images/buttons/help_hover.png");
-        btn_quit.SetImages(
-            "assets/images/buttons/quit.png", "assets/images/buttons/quit_hover.png");
-        btn_mode.SetImages(
-            "assets/images/buttons/mode_3d.png", "assets/images/buttons/mode_3d_hover.png");
-
-        // Sets button positions
-        btn_start.SetX(380);
-        btn_help.SetX(380);
-        btn_quit.SetX(380);
-        btn_mode.SetX(380);
-
-        btn_start.SetY(240);
-        btn_help.SetY(380);
-        btn_quit.SetY(520);
-        btn_mode.SetY(660);
-
-        // Load font
-        font = asw::assets::loadFont("assets/fonts/dosis.ttf", 16);
-
         // Load sprites
-        menu = asw::assets::loadTexture("assets/images/menu.png");
-        help_menu = asw::assets::loadTexture("assets/images/help.png");
+        auto background = createObject<asw::game::Sprite>();
+        background->setTexture(asw::assets::loadTexture("assets/images/menu.png"));
 
-        // Help open
-        helpOpen = false;
+        // Setup buttons
+        btn_start = createObject<Button>();
+        btn_help = createObject<Button>();
+        btn_quit = createObject<Button>();
+
+        btn_start->setImages(
+            "assets/images/buttons/start.png", "assets/images/buttons/start_hover.png");
+        btn_help->setImages(
+            "assets/images/buttons/help.png", "assets/images/buttons/help_hover.png");
+        btn_quit->setImages(
+            "assets/images/buttons/quit.png", "assets/images/buttons/quit_hover.png");
+
+        btn_start->transform.setPosition(380, 240);
+        btn_help->transform.setPosition(380, 380);
+        btn_quit->transform.setPosition(380, 520);
+
+        // Help
+        spr_help = createObject<asw::game::Sprite>();
+        spr_help->setTexture(asw::assets::loadTexture("assets/images/help.png"));
+        spr_help->active = false;
     }
 
     void update(float deltaTime) override
     {
+        using namespace asw::input;
+
         Scene::update(deltaTime);
 
-        if (helpOpen) {
-            if (asw::input::keyboard.anyPressed
-                || asw::input::getMouseButtonDown(asw::input::MouseButton::Left)) {
-                helpOpen = false;
-            }
-        } else if (asw::input::getKeyDown(asw::input::Key::Escape)) {
+        // Checks for mouse press
+        if (getMouseButtonDown(MouseButton::Left) && btn_start->hover()) {
+            sceneManager.setNextScene(GameState::LevelSelect);
+        }
+
+        if (getMouseButtonDown(MouseButton::Left) && btn_help->hover() && !spr_help->active) {
+            spr_help->active = !spr_help->active;
+        } else if (getMouseButtonDown(MouseButton::Left) && spr_help->active) {
+            spr_help->active = false;
+        }
+
+        if (getMouseButtonDown(MouseButton::Left) && btn_quit->hover()) {
             asw::core::exit = true;
         }
 
-        // Checks for mouse press
-        if (asw::input::getMouseButtonDown(asw::input::MouseButton::Left)) {
-            if (btn_start.Hover()) {
-                sceneManager.setNextScene(GameState::LevelSelect);
-            } else if (btn_help.Hover() && !helpOpen) {
-                helpOpen = true;
-            } else if (btn_quit.Hover()) {
-                asw::core::exit = true;
-            } else if (btn_mode.Hover()) {
-                if (perspective == 0) {
-                    perspective = 1;
-                    btn_mode.SetImages("assets/images/buttons/mode_2d.png",
-                        "assets/images/buttons/mode_2d_hover.png");
-                } else if (perspective == 1) {
-                    perspective = 0;
-                    btn_mode.SetImages("assets/images/buttons/mode_3d.png",
-                        "assets/images/buttons/mode_3d_hover.png");
-                }
-            }
-        }
-    }
-
-    void draw() override
-    {
-        // Draws Menu
-        asw::draw::sprite(menu, asw::Vec2<float>(0, 0));
-
-        // Draws Buttons
-        btn_start.draw();
-        btn_help.draw();
-        btn_quit.draw();
-        btn_mode.draw();
-
-        if (helpOpen) {
-            asw::draw::sprite(help_menu, asw::Vec2<float>(0, 0));
+        // Help
+        if (spr_help->active && keyboard.anyPressed) {
+            spr_help->active = false;
+        } else if (getKeyDown(Key::Escape)) {
+            asw::core::exit = true;
         }
     }
 
 private:
     // Creates Buttons
-    Button btn_start;
-    Button btn_help;
-    Button btn_quit;
-    Button btn_mode;
-
-    asw::Font font;
-
-    asw::Texture help_menu;
-    asw::Texture menu;
+    std::shared_ptr<Button> btn_start;
+    std::shared_ptr<Button> btn_help;
+    std::shared_ptr<Button> btn_quit;
 
     // Help open
-    bool helpOpen;
+    std::shared_ptr<asw::game::Sprite> spr_help;
 };

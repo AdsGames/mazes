@@ -2,6 +2,7 @@
 
 #include <asw/asw.h>
 #include <fstream>
+#include <memory>
 
 #include "../button.h"
 #include "../globals.h"
@@ -14,13 +15,23 @@ public:
 
     void init() override
     {
-        back.SetImages("assets/images/buttons/back.png", "assets/images/buttons/back_hover.png");
-
-        background = asw::assets::loadTexture("assets/images/background.png");
+        // BG Image
+        auto background = createObject<asw::game::Sprite>();
+        background->setTexture(asw::assets::loadTexture("assets/images/background.png"));
 
         // Sets button positions
-        back.SetX(380);
-        back.SetY(40);
+        btn_left = createObject<Button>();
+        btn_right = createObject<Button>();
+        back = createObject<Button>();
+
+        btn_left->setImages("assets/images/arrow_left_hover.png", "assets/images/arrow_left.png");
+        btn_right->setImages(
+            "assets/images/arrow_right_hover.png", "assets/images/arrow_right.png");
+        back->setImages("assets/images/buttons/back.png", "assets/images/buttons/back_hover.png");
+
+        btn_left->transform.position = asw::Vec2<float>(100, 420);
+        btn_right->transform.position = asw::Vec2<float>(1280 - 64 - 100, 420);
+        back->transform.position = asw::Vec2<float>(380, 40);
 
         // Load font
         font = asw::assets::loadFont("assets/fonts/dosis.ttf", 32);
@@ -29,10 +40,6 @@ public:
         click = asw::assets::loadSample("assets/sfx/click.wav");
 
         // Load sprites
-        levelSelect = asw::assets::loadTexture("assets/images/levelSelect.png");
-        levelSelectLeft = asw::assets::loadTexture("assets/images/levelSelectLeft.png");
-        levelSelectRight = asw::assets::loadTexture("assets/images/levelSelectRight.png");
-
         // Load tilemap
         tilemap.load(std::format("assets/levels/level{}.map", GameScene::level));
     }
@@ -50,11 +57,11 @@ public:
         // Click buttons
         int delta_level = 0;
         if (asw::input::getMouseButtonDown(asw::input::MouseButton::Left)) {
-            if (leftQuad.contains(asw::input::mouse.position)) {
+            if (btn_left->hover()) {
                 delta_level = -1;
             }
 
-            if (rightQuad.contains(asw::input::mouse.position)) {
+            if (btn_right->hover()) {
                 delta_level = 1;
             }
 
@@ -62,7 +69,7 @@ public:
                 sceneManager.setNextScene(GameState::Game);
             }
 
-            if (back.Hover() == true) {
+            if (back->hover()) {
                 sceneManager.setNextScene(GameState::Menu);
             }
         }
@@ -82,56 +89,41 @@ public:
 
     void draw() override
     {
-        asw::draw::sprite(levelSelect, asw::Vec2<float>(0, 0));
-        back.draw();
-        asw::draw::stretchSprite(background, playQuad);
+        Scene::draw();
+
+        asw::draw::rectFill(playQuad, asw::Color(179, 185, 209));
 
         // Mini tiles tiles
         for (int i = 0; i < TileMap::WIDTH; i++) {
             for (int t = 0; t < TileMap::HEIGHT; t++) {
                 auto& tile = tilemap.at(i, t);
-                const auto tile_pos = asw::Vec2<float>((i * 20) + 320, (t * 20) + 220);
-
                 if (!tile.image || tile.value == 1) {
                     continue;
                 }
 
-                if (perspective == 0) {
-                    auto position = asw::Quad<float>(tile_pos.x, tile_pos.y, 30, 30);
-                    asw::draw::stretchSprite(tile.image, position);
-                } else if (perspective == 1) {
-                    auto position = asw::Quad<float>(tile_pos.x, tile_pos.y, 20, 20);
-                    asw::draw::stretchSprite(tile.image, position);
-                }
+                const auto tile_pos = asw::Vec2<float>((i * 20) + 320, (t * 20) + 220);
+                auto position = asw::Quad<float>(tile_pos.x, tile_pos.y, 30, 30);
+                asw::draw::stretchSprite(tile.image, position);
             }
         }
 
         // Text
         asw::draw::textCenter(font, std::format("Level: {}", GameScene::level),
-            asw::Vec2<float>(640, 760), asw::util::makeColor(255, 255, 255));
+            asw::Vec2<float>(640, 760), asw::color::white);
 
-        asw::draw::textCenter(font, tilemap.level_text, asw::Vec2<float>(640, 800),
-            asw::util::makeColor(255, 255, 255));
-
-        // Hovering
-        if (leftQuad.contains(asw::input::mouse.position)) {
-            asw::draw::sprite(levelSelectLeft, asw::Vec2<float>(0, 0));
-        }
-        if (rightQuad.contains(asw::input::mouse.position)) {
-            asw::draw::sprite(levelSelectRight, asw::Vec2<float>(1080, 0));
-        }
+        asw::draw::textCenter(
+            font, tilemap.level_text, asw::Vec2<float>(640, 800), asw::color::white);
     }
 
 private:
-    Button back;
+    std::shared_ptr<Button> back;
+    std::shared_ptr<Button> btn_left;
+    std::shared_ptr<Button> btn_right;
 
-    asw::Texture background;
     asw::Font font;
     asw::Sample click;
 
     asw::Texture levelSelect;
-    asw::Texture levelSelectLeft;
-    asw::Texture levelSelectRight;
 
     asw::Quad<float> leftQuad { 0, 0, 200, 960 };
     asw::Quad<float> rightQuad { 1080, 0, 200, 960 };

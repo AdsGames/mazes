@@ -21,6 +21,7 @@ public:
     {
         intro = asw::assets::loadTexture("assets/images/intro.png");
         splash = asw::assets::loadTexture("assets/images/splash.png");
+        background = asw::assets::loadTexture("assets/images/background.png");
         time_acc = 0.0F;
     }
 
@@ -45,6 +46,7 @@ public:
 
         // Show the appropriate image for this frame
         if (frame == 0) {
+            asw::draw::sprite(background, asw::Vec2<float>(0, 0));
             asw::draw::sprite(intro, asw::Vec2<float>(0, 0));
         } else {
             asw::draw::sprite(splash, asw::Vec2<float>(0, 0));
@@ -62,14 +64,14 @@ public:
         }
 
         // Draw rect
-        const auto alpha_int = static_cast<int>(alpha * 255);
-        const auto color = asw::util::makeColor(0, 0, 0, alpha_int);
+        const auto color = asw::Color::fromFloat(0, 0, 0, alpha);
         asw::draw::rectFill({ 0, 0, 1280, 960 }, color);
     }
 
 private:
     asw::Texture intro;
     asw::Texture splash;
+    asw::Texture background;
 
     float time_acc;
 };

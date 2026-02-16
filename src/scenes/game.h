@@ -44,23 +44,12 @@ public:
 
         font = loadFont("assets/fonts/dosis.ttf", 16);
 
-        if (perspective == 0) {
-            character[0] = loadTexture("assets/images/blocks/3d/character_down.png");
-            character[1] = loadTexture("assets/images/blocks/3d/character_up.png");
-            character[2] = loadTexture("assets/images/blocks/3d/character_left.png");
-            character[3] = loadTexture("assets/images/blocks/3d/character_right.png");
-            broom = loadTexture("assets/images/blocks/3d/broom.png");
-        }
-
-        if (perspective == 1) {
-            character[0] = loadTexture("assets/images/blocks/2d/character.png");
-            character[1] = loadTexture("assets/images/blocks/2d/character.png");
-            character[2] = loadTexture("assets/images/blocks/2d/character.png");
-            character[3] = loadTexture("assets/images/blocks/2d/character.png");
-            broom = loadTexture("assets/images/blocks/2d/broom.png");
-        }
-
-        background = loadTexture("assets/images/background.png");
+        // Tiles
+        character[0] = loadTexture("assets/images/blocks/character_down.png");
+        character[1] = loadTexture("assets/images/blocks/character_up.png");
+        character[2] = loadTexture("assets/images/blocks/character_left.png");
+        character[3] = loadTexture("assets/images/blocks/character_right.png");
+        broom = loadTexture("assets/images/blocks/broom.png");
 
         // Sounds and music
         sweep = loadSample("assets/sfx/sweep.wav");
@@ -148,7 +137,7 @@ public:
         using namespace asw::draw;
 
         // Draw background
-        sprite(background, asw::Vec2<float>(0, 0));
+        rectFill(asw::Quad<float>(0, 0, 1280, 960), asw::Color(179, 185, 209));
 
         // Draws Tiles
         for (int t = 0; t < TileMap::HEIGHT; t++) {
@@ -157,25 +146,16 @@ public:
                     drawCharacter();
                 }
 
-                if (perspective == 0) {
-                    stretchSprite(tilemap.at(i, t).image, asw::Quad<float>(i * 40, t * 40, 60, 60));
-                } else {
-                    stretchSprite(tilemap.at(i, t).image, asw::Quad<float>(i * 40, t * 40, 40, 40));
-                }
+                stretchSprite(tilemap.at(i, t).image, asw::Quad<float>(i * 40, t * 40, 60, 60));
             }
         }
 
         // Draws Stats
-        rectFill(asw::Quad<float>(0, 0, 1280, 20), asw::util::makeColor(0, 0, 0, 200));
+        rectFill(asw::Quad<float>(0, 0, 1280, 20), asw::Color(0, 0, 0, 200));
 
-        text(font, std::format("Score: {}", score), asw::Vec2<float>(0, 0),
-            asw::util::makeColor(255, 255, 255));
-
-        text(font, std::format("Lives: {}", lives), asw::Vec2<float>(100, 0),
-            asw::util::makeColor(255, 255, 255));
-
-        textCenter(font, tilemap.level_text, asw::Vec2<float>(640, 0),
-            asw::util::makeColor(255, 255, 255));
+        text(font, std::format("Score: {}", score), asw::Vec2<float>(0, 0), asw::color::white);
+        text(font, std::format("Lives: {}", lives), asw::Vec2<float>(100, 0), asw::color::white);
+        textCenter(font, tilemap.level_text, asw::Vec2<float>(640, 0), asw::color::white);
 
         // Robot progress meter
         {
@@ -190,32 +170,31 @@ public:
                 : 1.0F;
 
             // Background
-            rectFill(asw::Quad<float>(meterX, meterY, meterWidth, meterHeight),
-                asw::util::makeColor(60, 60, 60));
+            rectFill(
+                asw::Quad<float>(meterX, meterY, meterWidth, meterHeight), asw::color::darkgray);
 
             // Filled portion (red when robots remain, green when cleared)
             const auto barColor = tilemap.robots_captured < tilemap.robots_total
-                ? asw::util::makeColor(200, 50, 50)
-                : asw::util::makeColor(50, 200, 50);
+                ? asw::color::red
+                : asw::color::green;
 
             rectFill(
                 asw::Quad<float>(meterX, meterY, meterWidth * progress, meterHeight), barColor);
 
             // Border
-            rect(asw::Quad<float>(meterX, meterY, meterWidth, meterHeight),
-                asw::util::makeColor(255, 255, 255));
+            rect(asw::Quad<float>(meterX, meterY, meterWidth, meterHeight), asw::color::white);
 
             // Label
             textRight(font,
                 std::format("Robots: {}/{}", tilemap.robots_captured, tilemap.robots_total),
-                asw::Vec2<float>(meterX - 5.0F, 0), asw::util::makeColor(255, 255, 255));
+                asw::Vec2<float>(meterX - 5.0F, 0), asw::color::white);
         }
 
         // Pause Game
         if (paused) {
-            rectFill(asw::Quad<float>(300, 300, 680, 360), asw::util::makeColor(0, 0, 0, 200));
+            rectFill(asw::Quad<float>(300, 300, 680, 360), asw::color::black);
             textCenter(font, "Paused press ESC to resume. Press M to go to the Menu.",
-                asw::Vec2<float>(640, 480), asw::util::makeColor(255, 255, 255));
+                asw::Vec2<float>(640, 480), asw::color::white);
         }
     }
 
@@ -228,27 +207,19 @@ public:
             = asw::Vec2<float>(static_cast<float>(position.x), static_cast<float>(position.y));
 
         // Draws Character
-        if (perspective == 0) {
-            if (rotation == 0) {
-                sprite(character[0], float_pos);
-            } else if (rotation == 128) {
-                sprite(character[1], float_pos);
-            } else if (rotation == 64) {
-                sprite(character[2], float_pos);
-            } else if (rotation == 192) {
-                sprite(character[3], float_pos);
-            }
-        } else {
+        if (rotation == 0) {
             sprite(character[0], float_pos);
+        } else if (rotation == 128) {
+            sprite(character[1], float_pos);
+        } else if (rotation == 64) {
+            sprite(character[2], float_pos);
+        } else if (rotation == 192) {
+            sprite(character[3], float_pos);
         }
 
         // Draws broom if needed
         if (broom_active) {
-            if (perspective == 0) {
-                rotateSprite(broom, float_pos + asw::Vec2<float>(10, 10), rotation);
-            } else {
-                sprite(broom, float_pos);
-            }
+            rotateSprite(broom, float_pos + asw::Vec2<float>(10, 10), rotation);
         }
     }
 
@@ -440,9 +411,6 @@ private:
     bool broom_active;
     std::array<asw::Texture, 4> character;
     asw::Texture broom;
-
-    // Background
-    asw::Texture background;
 
     // Sounds
     asw::Music song;

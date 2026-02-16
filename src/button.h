@@ -4,27 +4,16 @@
 #include <asw/asw.h>
 #include <string>
 
-class Button {
+class Button : public asw::game::GameObject {
 public:
-    Button() = default;
+    using asw::game::GameObject::GameObject;
 
-    void SetImages(const std::string& image1, const std::string& image2);
+    void setImages(const std::string& image1, const std::string& image2);
 
-    void draw();
+    void draw() override;
 
-    void SetX(int newValue);
-    void SetY(int newValue);
-
-    bool Hover() const;
-
-    int GetX() const;
-    int GetY() const;
+    bool hover() const;
 
 private:
-    int x { 0 };
-    int y { 0 };
-    int width { 520 };
-    int height { 120 };
-
     std::array<asw::Texture, 2> images;
 };

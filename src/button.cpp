@@ -6,40 +6,21 @@ using namespace asw::assets;
 using namespace asw::input;
 using namespace asw::draw;
 
-void Button::SetImages(const std::string& image1, const std::string& image2)
+void Button::setImages(const std::string& image1, const std::string& image2)
 {
     images[0] = loadTexture(image1);
     images[1] = loadTexture(image2);
+
+    transform.size = asw::Vec2<float>(images[0]->w, images[0]->h);
 }
 
-bool Button::Hover() const
+bool Button::hover() const
 {
-    return (mouse.position.x > x && mouse.position.x < x + width && mouse.position.y > y
-        && mouse.position.y < y + height);
-}
-
-void Button::SetX(int newValue)
-{
-    x = newValue;
-}
-
-void Button::SetY(int newValue)
-{
-    y = newValue;
-}
-
-int Button::GetX() const
-{
-    return x;
-}
-
-int Button::GetY() const
-{
-    return y;
+    return transform.contains(asw::input::mouse.position);
 }
 
 void Button::draw()
 {
-    auto frame = Hover() ? 1 : 0;
-    sprite(images[frame], asw::Vec2<float>(x, y));
+    auto frame = hover() ? 1 : 0;
+    sprite(images[frame], transform.position);
 }
