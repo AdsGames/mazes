@@ -4,6 +4,7 @@
 #include <asw/asw.h>
 
 #include "../button.h"
+#include "../colors.h"
 #include "../globals.h"
 #include "./scenes.h"
 
@@ -14,12 +15,12 @@ public:
     void init() override
     {
         winscreen = asw::assets::loadTexture("assets/images/winscreen.png");
-        font = asw::assets::loadFont("assets/fonts/dosis.ttf", 64);
+        font = asw::assets::loadFont("assets/fonts/jersey-10.ttf", 64);
     }
 
-    void update(float deltaTime) override
+    void update(float dt) override
     {
-        Scene::update(deltaTime);
+        Scene::update(dt);
 
         if (asw::input::getKeyDown(asw::input::Key::Space)
             || asw::input::getKeyDown(asw::input::Key::Return)
@@ -32,7 +33,7 @@ public:
     void draw() override
     {
         asw::draw::sprite(winscreen, asw::Vec2<float>(0, 0));
-        asw::draw::text(font, std::to_string(score), asw::Vec2<float>(620, 850), asw::color::black);
+        asw::draw::text(font, std::to_string(score), asw::Vec2<float>(620, 850), palette::black);
     }
 
 private:

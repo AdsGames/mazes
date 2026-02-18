@@ -1,112 +1,103 @@
 #include "tilemap.h"
 
-#include "globals.h"
-#include "id.h"
 #include <fstream>
+#include <nlohmann/json.hpp>
 
 using namespace asw::assets;
 
-Tile& TileMap::at(int x, int y)
+TileType TileMap::at(const asw::Vec2<int>& pos) const
 {
-    return tiles[x][y];
+    return tiles[pos.x][pos.y];
 }
 
-const Tile& TileMap::atPixel(int pixelX, int pixelY) const
+TileType TileMap::atPixel(const asw::Vec2<int>& pos) const
 {
-    return tiles[pixelX / TILE_SIZE][pixelY / TILE_SIZE];
+    return tiles[pos.x / render_config.tile_size][pos.y / render_config.tile_size];
 }
 
-int TileMap::getValue(int x, int y) const
+TileType TileMap::getValue(const asw::Vec2<int>& pos) const
 {
-    return tiles[x][y].value;
+    return tiles[pos.x][pos.y];
 }
 
-void TileMap::setValue(int x, int y, int value)
+void TileMap::setValue(const asw::Vec2<int>& pos, TileType type)
 {
-    setValue(tiles[x][y], value);
+    tiles[pos.x][pos.y] = type;
 }
 
-void TileMap::setValue(Tile& tile, int value)
+bool TileMap::load(const std::string& path)
 {
-    tile.value = value;
-
-    // Assign images to data values
-    switch (tile.value) {
-    case V_ROBOT:
-        tile.image = robot;
-        break;
-    case V_BOX:
-        tile.image = box;
-        break;
-    case V_SCRAP:
-        tile.image = scrap;
-        break;
-    case V_WALL:
-        tile.image = wall;
-        break;
-    case V_GARBAGECAN:
-        tile.image = garbagecan;
-        break;
-    case V_JANITORROOM:
-        tile.image = janitorroom;
-        break;
-    case V_WALL2:
-        tile.image = wall2;
-        break;
-    case V_JANITORROOMOPEN:
-        tile.image = janitorroomopen;
-        break;
-    default:
-        tile.image = nullptr;
-    }
-}
-
-bool TileMap::load(const std::string& filename)
-{
-    wall = loadTexture("assets/images/blocks/wall.png");
-    wall2 = loadTexture("assets/images/blocks/wall2.png");
-    robot = loadTexture("assets/images/blocks/robot.png");
-    box = loadTexture("assets/images/blocks/box.png");
-    scrap = loadTexture("assets/images/blocks/scrap.png");
-    garbagecan = loadTexture("assets/images/blocks/garbagecan.png");
-    janitorroom = loadTexture("assets/images/blocks/janitor_room.png");
-    janitorroomopen = loadTexture("assets/images/blocks/janitor_room_open.png");
-
-    std::ifstream read(filename.c_str());
-    if (read.fail()) {
+    std::ifstream file(path);
+    if (file.fail()) {
         return false;
     }
 
-    // 1) Title line (whole line, including spaces)
-    std::getline(read, level_text);
-    if (read.fail()) {
+    // Create buffer
+    nlohmann::json doc = nlohmann::json::parse(file);
+
+    // Check layers
+    if (!doc.contains("layers")) {
+        asw::log::warn("Error: No layers found in file " + path);
+        file.close();
         return false;
     }
 
-    // 2) Required robots_total (next integer)
-    read >> robots_total;
+    if (doc["layers"].size() != 1) {
+        asw::log::warn("Error: Invalid number of layers in file " + path);
+        file.close();
+        return false;
+    }
+
+    // Read properties if they exist
+    level_text = "";
+    robots_total = 0;
     robots_captured = 0;
-    if (read.fail()) {
-        return false;
-    }
-
-    // IMPORTANT: consume the newline after the integer so subsequent reads are
-    // clean
-    read.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-    // 3) Tile values (next 24 lines, each with 32 integers)
-    for (int y = 0; y < HEIGHT; y++) {
-        for (int x = 0; x < WIDTH; x++) {
-            int value;
-            read >> value;
-
-            if (read.fail()) {
-                return false;
+    if (doc.contains("properties")) {
+        for (auto& prop : doc["properties"]) {
+            if (prop["name"] == "title") {
+                level_text = prop["value"];
             }
-
-            setValue(tiles[x][y], value);
+            if (prop["name"] == "robot_target") {
+                robots_total = prop["value"];
+            }
         }
     }
 
+    // Background color
+    background = asw::Color(179, 185, 209); // Default to gray
+    if (doc.contains("backgroundcolor")) {
+        background = asw::Color::fromHex(doc["backgroundcolor"]);
+    }
+
+    // Load data into vector
+    const std::vector<int> tile_layer = doc["layers"][0]["data"];
+
+    // 3) Tile values (next 24 lines, each with 32 integers)
+    int x = 0;
+    int y = 0;
+    for (auto value : tile_layer) {
+        tiles[x][y] = tileTypeFromValue(value);
+        x++;
+        if (x >= WIDTH) {
+            x = 0;
+            y++;
+        }
+    }
+
+    file.close();
+
     return true;
+}
+
+void TileMap::render(const asw::Vec2<int>& pos) const
+{
+    tile_renderer.renderTile(tiles[pos.x][pos.y], pos.x, pos.y, render_config);
+}
+
+void TileMap::renderBackground() const
+{
+    const auto pos = asw::Quad<float>(render_config.offset_x, render_config.offset_y,
+        WIDTH * render_config.tile_size, HEIGHT * render_config.tile_size);
+
+    asw::draw::rectFill(pos, background);
 }

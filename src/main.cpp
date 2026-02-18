@@ -21,6 +21,7 @@ int main()
     // Initializing
     asw::core::init(1280, 960);
     asw::display::setTitle("Mazes");
+    asw::display::setIcon("assets/mazes.ico");
 
     // Starts Game
     auto app = asw::scene::SceneManager<GameState>();

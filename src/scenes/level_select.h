@@ -5,7 +5,9 @@
 #include <memory>
 
 #include "../button.h"
+#include "../colors.h"
 #include "../globals.h"
+#include "../tilemap.h"
 #include "./game.h"
 #include "./scenes.h"
 
@@ -15,38 +17,55 @@ public:
 
     void init() override
     {
+        // Load font
+        font = asw::assets::loadFont("assets/fonts/jersey-10.ttf", 48);
+
         // BG Image
         auto background = createObject<asw::game::Sprite>();
         background->setTexture(asw::assets::loadTexture("assets/images/background.png"));
 
         // Sets button positions
         btn_left = createObject<Button>();
-        btn_right = createObject<Button>();
-        back = createObject<Button>();
-
-        btn_left->setImages("assets/images/arrow_left_hover.png", "assets/images/arrow_left.png");
-        btn_right->setImages(
-            "assets/images/arrow_right_hover.png", "assets/images/arrow_right.png");
-        back->setImages("assets/images/buttons/back.png", "assets/images/buttons/back_hover.png");
-
+        btn_left->setImages(asw::assets::loadTexture("assets/images/arrow_left_hover.png"),
+            asw::assets::loadTexture("assets/images/arrow_left.png"));
         btn_left->transform.position = asw::Vec2<float>(100, 420);
-        btn_right->transform.position = asw::Vec2<float>(1280 - 64 - 100, 420);
-        back->transform.position = asw::Vec2<float>(380, 40);
 
-        // Load font
-        font = asw::assets::loadFont("assets/fonts/dosis.ttf", 32);
+        btn_right = createObject<Button>();
+        btn_right->setImages(asw::assets::loadTexture("assets/images/arrow_right_hover.png"),
+            asw::assets::loadTexture("assets/images/arrow_right.png"));
+        btn_right->transform.position = asw::Vec2<float>(1280 - 64 - 100, 420);
+
+        back = createObject<Button>();
+        back->setColor(palette::red);
+        back->setText("Back");
+        back->setFont(font);
+        back->transform.setPosition(40, 856);
+        back->transform.setSize(200, 64);
+
+        // Level text
+        level_text = createObject<asw::game::Text>();
+        level_text->setFont(font);
+        level_text->setText("");
+        level_text->setColor(palette::white);
+        level_text->setJustify(asw::TextJustify::CENTER);
+        level_text->transform.setPosition(640, 760);
 
         // Load sounds
         click = asw::assets::loadSample("assets/sfx/click.wav");
 
         // Load sprites
         // Load tilemap
-        tilemap.load(std::format("assets/levels/level{}.map", GameScene::level));
+        tilemap.load(std::format("assets/levels/level{}.json", GameScene::level));
+        tilemap.setRenderConfig(
+            { .tile_size = 20, .render_size = 30, .offset_x = 320, .offset_y = 220 });
     }
 
-    void update(float deltaTime) override
+    void update(float dt) override
     {
-        Scene::update(deltaTime);
+        Scene::update(dt);
+
+        // Level text
+        level_text->setText(std::format("Level {}: {}", GameScene::level, tilemap.getLevelText()));
 
         // Go to menu
         if (asw::input::getKeyDown(asw::input::Key::Escape)) {
@@ -76,11 +95,9 @@ public:
 
         // Change level
         if (delta_level != 0) {
-            std::string file_path
-                = std::format("assets/levels/level{}.map", GameScene::level + delta_level);
-            std::ifstream read(file_path.c_str());
-            if (!read.fail()) {
-                tilemap.load(file_path);
+            const auto file_path
+                = std::format("assets/levels/level{}.json", GameScene::level + delta_level);
+            if (tilemap.load(file_path)) {
                 asw::sound::play(click);
                 GameScene::level += delta_level;
             }
@@ -91,28 +108,14 @@ public:
     {
         Scene::draw();
 
-        asw::draw::rectFill(playQuad, asw::Color(179, 185, 209));
+        tilemap.renderBackground();
 
         // Mini tiles tiles
         for (int i = 0; i < TileMap::WIDTH; i++) {
             for (int t = 0; t < TileMap::HEIGHT; t++) {
-                auto& tile = tilemap.at(i, t);
-                if (!tile.image || tile.value == 1) {
-                    continue;
-                }
-
-                const auto tile_pos = asw::Vec2<float>((i * 20) + 320, (t * 20) + 220);
-                auto position = asw::Quad<float>(tile_pos.x, tile_pos.y, 30, 30);
-                asw::draw::stretchSprite(tile.image, position);
+                tilemap.render({ i, t });
             }
         }
-
-        // Text
-        asw::draw::textCenter(font, std::format("Level: {}", GameScene::level),
-            asw::Vec2<float>(640, 760), asw::color::white);
-
-        asw::draw::textCenter(
-            font, tilemap.level_text, asw::Vec2<float>(640, 800), asw::color::white);
     }
 
 private:
@@ -123,9 +126,9 @@ private:
     asw::Font font;
     asw::Sample click;
 
-    asw::Texture levelSelect;
-
-    asw::Quad<float> leftQuad { 0, 0, 200, 960 };
-    asw::Quad<float> rightQuad { 1080, 0, 200, 960 };
+    asw::Texture level_select;
+    std::shared_ptr<asw::game::Text> level_text;
     asw::Quad<float> playQuad { 320, 220, 640, 480 };
+
+    TileMap tilemap;
 };

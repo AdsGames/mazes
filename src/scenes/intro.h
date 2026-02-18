@@ -10,9 +10,9 @@ class IntroScene : public asw::scene::Scene<GameState> {
 public:
     using asw::scene::Scene<GameState>::Scene;
 
-    static constexpr float FADE_IN = 500.0F;
-    static constexpr float HOLD = 1000.0F;
-    static constexpr float FADE_OUT = 500.0F;
+    static constexpr float FADE_IN = 0.5F;
+    static constexpr float HOLD = 1.0F;
+    static constexpr float FADE_OUT = 0.5F;
     static constexpr float FRAME_DURATION = FADE_IN + HOLD + FADE_OUT;
     static constexpr int NUM_FRAMES = 2;
     static constexpr float INTRO_DURATION = FRAME_DURATION * NUM_FRAMES;
@@ -25,11 +25,11 @@ public:
         time_acc = 0.0F;
     }
 
-    void update(float deltaTime) override
+    void update(float dt) override
     {
         using namespace asw::input;
-        Scene::update(deltaTime);
-        time_acc += deltaTime;
+        Scene::update(dt);
+        time_acc += dt;
 
         if (asw::input::keyboard.anyPressed || time_acc >= INTRO_DURATION) {
             sceneManager.setNextScene(GameState::Menu);
@@ -42,7 +42,7 @@ public:
 
         // Determine which frame we're on and the local time within it
         const auto frame = static_cast<int>(time_acc / FRAME_DURATION);
-        const float local = time_acc - static_cast<float>(frame) * FRAME_DURATION;
+        const float local = time_acc - (static_cast<float>(frame) * FRAME_DURATION);
 
         // Show the appropriate image for this frame
         if (frame == 0) {
@@ -73,5 +73,5 @@ private:
     asw::Texture splash;
     asw::Texture background;
 
-    float time_acc;
+    float time_acc { 0.0F };
 };

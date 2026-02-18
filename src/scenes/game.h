@@ -9,9 +9,9 @@
 #include <string>
 
 #include "../button.h"
-#include "../id.h"
-
+#include "../colors.h"
 #include "../globals.h"
+#include "../tilemap.h"
 #include "./scenes.h"
 
 class GameScene : public asw::scene::Scene<GameState> {
@@ -19,8 +19,8 @@ public:
     using asw::scene::Scene<GameState>::Scene;
 
     // Constants
-    static constexpr int ROBOT_MOVE_INTERVAL = 2080 / 4; // 4 moves per beat
-    static constexpr int CHARACTER_MOVE_INTERVAL = 100;
+    static constexpr float ROBOT_MOVE_INTERVAL = 2.080F / 4.0F; // 4 moves per beat @ 125 BPM
+    static constexpr float CHARACTER_MOVE_INTERVAL = 0.1F;
     static constexpr int DEFAULT_LIVES = 3;
 
     // State
@@ -43,6 +43,7 @@ public:
         level_complete = false;
 
         font = loadFont("assets/fonts/dosis.ttf", 16);
+        font_pause = loadFont("assets/fonts/jersey-10.ttf", 32);
 
         // Tiles
         character[0] = loadTexture("assets/images/blocks/character_down.png");
@@ -64,18 +65,22 @@ public:
 
         song = loadMusic("assets/sfx/music.ogg");
 
-        level = 1;
         score = 0;
+
+        // Render config
+        tilemap.load(std::format("assets/levels/level{}.json", level));
+        tilemap.setRenderConfig(
+            { .tile_size = 40, .render_size = 60, .offset_x = 0, .offset_y = 0 });
 
         // Background Music
         fadeInMusic(song, 1.0F, 1000);
     }
 
-    void update(float deltaTime) override
+    void update(float dt) override
     {
         using namespace asw::input;
 
-        Scene::update(deltaTime);
+        Scene::update(dt);
 
         // Toggle pause
         if (getKeyDown(Key::Escape)) {
@@ -92,8 +97,8 @@ public:
         }
 
         // Ticker for character movement and robot movement
-        time_acc += deltaTime;
-        move_acc += deltaTime;
+        time_acc += dt;
+        move_acc += dt;
         if (time_acc >= ROBOT_MOVE_INTERVAL) {
             time_acc -= ROBOT_MOVE_INTERVAL;
             updateRobots();
@@ -106,7 +111,7 @@ public:
         characterMove();
 
         // Die
-        if (tilemap.atPixel(position.x, position.y).value == V_ROBOT) {
+        if (tilemap.atPixel(position) == TileType::Robot) {
             lives -= 1;
             position.x = 40;
             position.y = 40;
@@ -137,7 +142,7 @@ public:
         using namespace asw::draw;
 
         // Draw background
-        rectFill(asw::Quad<float>(0, 0, 1280, 960), asw::Color(179, 185, 209));
+        tilemap.renderBackground();
 
         // Draws Tiles
         for (int t = 0; t < TileMap::HEIGHT; t++) {
@@ -146,16 +151,17 @@ public:
                     drawCharacter();
                 }
 
-                stretchSprite(tilemap.at(i, t).image, asw::Quad<float>(i * 40, t * 40, 60, 60));
+                tilemap.render({ i, t });
             }
         }
 
         // Draws Stats
         rectFill(asw::Quad<float>(0, 0, 1280, 20), asw::Color(0, 0, 0, 200));
 
-        text(font, std::format("Score: {}", score), asw::Vec2<float>(0, 0), asw::color::white);
-        text(font, std::format("Lives: {}", lives), asw::Vec2<float>(100, 0), asw::color::white);
-        textCenter(font, tilemap.level_text, asw::Vec2<float>(640, 0), asw::color::white);
+        text(font, std::format("Score: {}", score), asw::Vec2<float>(0, 0), palette::white);
+        text(font, std::format("Lives: {}", lives), asw::Vec2<float>(100, 0), palette::white);
+        text(font, tilemap.getLevelText(), asw::Vec2<float>(640, 0), palette::white,
+            asw::TextJustify::CENTER);
 
         // Robot progress meter
         {
@@ -164,37 +170,31 @@ public:
             const float meterX = 1280.0F - meterWidth - 5.0F;
             const float meterY = 4.0F;
 
-            const float progress = tilemap.robots_total > 0
-                ? static_cast<float>(tilemap.robots_captured)
-                    / static_cast<float>(tilemap.robots_total)
-                : 1.0F;
+            const float progress = tilemap.getProgress();
 
             // Background
-            rectFill(
-                asw::Quad<float>(meterX, meterY, meterWidth, meterHeight), asw::color::darkgray);
+            rectFill(asw::Quad<float>(meterX, meterY, meterWidth, meterHeight), palette::dark_gray);
 
             // Filled portion (red when robots remain, green when cleared)
-            const auto barColor = tilemap.robots_captured < tilemap.robots_total
-                ? asw::color::red
-                : asw::color::green;
+            const auto barColor = tilemap.getCompleted() ? palette::green : palette::red;
 
             rectFill(
                 asw::Quad<float>(meterX, meterY, meterWidth * progress, meterHeight), barColor);
 
             // Border
-            rect(asw::Quad<float>(meterX, meterY, meterWidth, meterHeight), asw::color::white);
+            rect(asw::Quad<float>(meterX, meterY, meterWidth, meterHeight), palette::white);
 
             // Label
-            textRight(font,
-                std::format("Robots: {}/{}", tilemap.robots_captured, tilemap.robots_total),
-                asw::Vec2<float>(meterX - 5.0F, 0), asw::color::white);
+            text(font,
+                std::format("Robots: {}/{}", tilemap.getRobotsCaptured(), tilemap.getRobotsTotal()),
+                asw::Vec2<float>(meterX - 5.0F, 0), palette::white, asw::TextJustify::RIGHT);
         }
 
         // Pause Game
         if (paused) {
-            rectFill(asw::Quad<float>(300, 300, 680, 360), asw::color::black);
-            textCenter(font, "Paused press ESC to resume. Press M to go to the Menu.",
-                asw::Vec2<float>(640, 480), asw::color::white);
+            rectFill(asw::Quad<float>(300, 300, 680, 360), palette::very_dark_green);
+            text(font_pause, "Paused press ESC to resume. Press M to go to the Menu.",
+                asw::Vec2<float>(640, 480), palette::white, asw::TextJustify::CENTER);
         }
     }
 
@@ -231,20 +231,20 @@ private:
 
         if (getKey(Key::Up) || getKey(Key::W)) {
             rotation = 128;
-            moveTowards(0, -1);
+            moveTowards({ 0, -1 });
         } else if (getKey(Key::Down) || getKey(Key::S)) {
             rotation = 0;
-            moveTowards(0, 1);
+            moveTowards({ 0, 1 });
         } else if (getKey(Key::Left) || getKey(Key::A)) {
             rotation = 64;
-            moveTowards(-1, 0);
+            moveTowards({ -1, 0 });
         } else if (getKey(Key::Right) || getKey(Key::D)) {
             rotation = 192;
-            moveTowards(1, 0);
+            moveTowards({ 1, 0 });
         }
     }
 
-    void moveTowards(int dx, int dy)
+    void moveTowards(const asw::Vec2<int>& target)
     {
         using namespace asw::input;
 
@@ -254,35 +254,36 @@ private:
 
         move_acc = 0;
 
-        auto& tile = tilemap.at(position.x / 40 + dx, position.y / 40 + dy);
-        auto& next_tile = tilemap.at(position.x / 40 + dx * 2, position.y / 40 + dy * 2);
+        auto player_pos = asw::Vec2<int>(position.x / 40, position.y / 40);
+        auto tile_pos = player_pos + target;
+        auto tile_next_pos = player_pos + target * 2;
+
+        auto tile = tilemap.at(tile_pos);
+        auto next_tile = tilemap.at(tile_next_pos);
 
         // Allow walking into
-        if (tile.value == V_EMPTY || tile.value == V_WALL2 || tile.value == V_ROBOT) {
-            position.x += dx * 40;
-            position.y += dy * 40;
+        if (tile == TileType::Empty || tile == TileType::WallWalkable || tile == TileType::Robot) {
+            position += target * 40;
             return;
         }
 
-        if (tile.value == V_WALL) {
+        if (tile == TileType::Wall) {
             asw::sound::play(hitwall);
             return;
         }
 
-        if (tile.value == V_BOX && next_tile.value == V_EMPTY) {
+        if (tile == TileType::Box && next_tile == TileType::Empty) {
             asw::sound::play(boxslide);
-
-            tilemap.setValue(tile, V_EMPTY);
-            tilemap.setValue(next_tile, V_BOX);
-            position.x += dx * 40;
-            position.y += dy * 40;
+            tilemap.setValue(tile_pos, TileType::Empty);
+            tilemap.setValue(tile_next_pos, TileType::Box);
+            position += target * 40;
             return;
         }
 
-        if (tile.value == V_BOX && next_tile.value != 0) {
-            if (next_tile.value == V_ROBOT) {
+        if (tile == TileType::Box && next_tile != TileType::Empty) {
+            if (next_tile == TileType::Robot) {
                 asw::sound::play(explode);
-                tilemap.setValue(next_tile, V_SCRAP);
+                tilemap.setValue(tile_next_pos, TileType::Scrap);
                 score += 100;
             } else {
                 asw::sound::play(boxhitwall);
@@ -291,32 +292,30 @@ private:
             return;
         }
 
-        if (tile.value == V_SCRAP && next_tile.value == V_EMPTY && broom_active) {
-            tilemap.setValue(tile, V_EMPTY);
-            tilemap.setValue(next_tile, V_SCRAP);
+        if (tile == TileType::Scrap && next_tile == TileType::Empty && broom_active) {
+            tilemap.setValue(tile_pos, TileType::Empty);
+            tilemap.setValue(tile_next_pos, TileType::Scrap);
             asw::sound::play(sweep);
             return;
         }
 
-        if (tile.value == V_SCRAP && next_tile.value == V_GARBAGECAN && broom_active) {
-            tilemap.setValue(tile, V_EMPTY);
+        if (tile == TileType::Scrap && next_tile == TileType::GarbageCan && broom_active) {
+            tilemap.setValue(tile_pos, TileType::Empty);
             score += 50;
-            if (tilemap.robots_captured < tilemap.robots_total) {
-                tilemap.robots_captured += 1;
-            }
+            tilemap.incrementRobotsCaptured();
             asw::sound::play(sweep);
             asw::sound::play(trash);
             return;
         }
 
-        if (tile.value == V_JANITORROOM && !has_broom) {
+        if (tile == TileType::JanitorRoom && !has_broom) {
             asw::sound::play(door);
             has_broom = true;
-            tilemap.setValue(tile, V_JANITORROOMOPEN);
+            tilemap.setValue(tile_pos, TileType::JanitorRoomOpen);
             return;
         }
 
-        if (tile.value == V_JANITORROOMOPEN && tilemap.robots_captured == tilemap.robots_total) {
+        if (tile == TileType::JanitorRoomOpen && tilemap.getCompleted()) {
             level_complete = true;
             return;
         }
@@ -331,15 +330,15 @@ private:
 
         for (int i = 0; i < TileMap::WIDTH; i++) {
             for (int t = 0; t < TileMap::HEIGHT; t++) {
-                if (tilemap.at(i, t).value == V_ROBOT) {
-                    robots.push_back({ i, t });
+                if (tilemap.at({ i, t }) == TileType::Robot) {
+                    robots.emplace_back(i, t);
                 }
             }
         }
 
         for (auto const& r : robots) {
             // Robot may have been destroyed since we collected positions
-            if (tilemap.at(r.x, r.y).value != V_ROBOT) {
+            if (tilemap.at(r) != TileType::Robot) {
                 continue;
             }
 
@@ -348,13 +347,13 @@ private:
             std::vector<asw::Vec2<int>> valid;
 
             for (const auto& m : moves) {
-                int nx = r.x + m.x;
-                int ny = r.y + m.y;
-                if (nx < 0 || nx >= TileMap::WIDTH || ny < 0 || ny >= TileMap::HEIGHT) {
+                const auto next_pos = r + m;
+                if (next_pos.x < 0 || next_pos.x >= TileMap::WIDTH || next_pos.y < 0
+                    || next_pos.y >= TileMap::HEIGHT) {
                     continue;
                 }
 
-                if (tilemap.at(nx, ny).value == V_EMPTY) {
+                if (tilemap.at(next_pos) == TileType::Empty) {
                     valid.push_back(m);
                 }
             }
@@ -368,10 +367,10 @@ private:
             asw::Vec2<int> chosen = valid[random_index];
 
             if (asw::random::chance()) {
-                int bestDist = player_pos.distance(r + chosen);
+                auto bestDist = player_pos.distance(r + chosen);
 
                 for (auto const& v : valid) {
-                    int dist = player_pos.distance(r + v);
+                    auto dist = player_pos.distance(r + v);
                     if (dist < bestDist) {
                         bestDist = dist;
                         chosen = v;
@@ -379,8 +378,9 @@ private:
                 }
             }
 
-            tilemap.setValue(r.x + chosen.x, r.y + chosen.y, V_ROBOT);
-            tilemap.setValue(r.x, r.y, V_EMPTY);
+            const auto next_pos = r + chosen;
+            tilemap.setValue(next_pos, TileType::Robot);
+            tilemap.setValue(r, TileType::Empty);
         }
     }
 
@@ -391,7 +391,7 @@ private:
         has_broom = false;
         position = { 40, 40 };
 
-        if (!tilemap.load(std::format("assets/levels/level{}.map", level))) {
+        if (!tilemap.load(std::format("assets/levels/level{}.json", level))) {
             sceneManager.setNextScene(GameState::Win);
         }
     }
@@ -426,4 +426,8 @@ private:
 
     // Font
     asw::Font font;
+    asw::Font font_pause;
+
+    // Tilemap
+    TileMap tilemap;
 };
