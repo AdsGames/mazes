@@ -38,7 +38,7 @@ inline TileType tileTypeFromValue(int value)
     case 31:
         return TileType::Robot;
     default:
-        asw::log::warn("Warning: Invalid tile value " + std::to_string(value));
+        asw::log::warn("Warning: Invalid tile value {}", value);
         return TileType::Empty;
     }
 }

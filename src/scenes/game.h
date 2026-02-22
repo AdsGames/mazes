@@ -8,7 +8,6 @@
 #include <sstream>
 #include <string>
 
-#include "../button.h"
 #include "../colors.h"
 #include "../globals.h"
 #include "../tilemap.h"
@@ -42,28 +41,28 @@ public:
         won = false;
         level_complete = false;
 
-        font = loadFont("assets/fonts/dosis.ttf", 16);
-        font_pause = loadFont("assets/fonts/jersey-10.ttf", 32);
+        font = load_font("assets/fonts/dosis.ttf", 16);
+        font_pause = load_font("assets/fonts/jersey-10.ttf", 32);
 
         // Tiles
-        character[0] = loadTexture("assets/images/blocks/character_down.png");
-        character[1] = loadTexture("assets/images/blocks/character_up.png");
-        character[2] = loadTexture("assets/images/blocks/character_left.png");
-        character[3] = loadTexture("assets/images/blocks/character_right.png");
-        broom = loadTexture("assets/images/blocks/broom.png");
+        character[0] = load_texture("assets/images/blocks/character_down.png");
+        character[1] = load_texture("assets/images/blocks/character_up.png");
+        character[2] = load_texture("assets/images/blocks/character_left.png");
+        character[3] = load_texture("assets/images/blocks/character_right.png");
+        broom = load_texture("assets/images/blocks/broom.png");
 
         // Sounds and music
-        sweep = loadSample("assets/sfx/sweep.wav");
-        explode = loadSample("assets/sfx/explode.wav");
-        trash = loadSample("assets/sfx/trash.wav");
-        oof = loadSample("assets/sfx/oof.wav");
-        winsound = loadSample("assets/sfx/winsound.wav");
-        door = loadSample("assets/sfx/door.wav");
-        hitwall = loadSample("assets/sfx/hitwall.wav");
-        boxhitwall = loadSample("assets/sfx/boxhitwall.wav");
-        boxslide = loadSample("assets/sfx/boxslide.wav");
+        sweep = load_sample("assets/sfx/sweep.wav");
+        explode = load_sample("assets/sfx/explode.wav");
+        trash = load_sample("assets/sfx/trash.wav");
+        oof = load_sample("assets/sfx/oof.wav");
+        winsound = load_sample("assets/sfx/winsound.wav");
+        door = load_sample("assets/sfx/door.wav");
+        hitwall = load_sample("assets/sfx/hitwall.wav");
+        boxhitwall = load_sample("assets/sfx/boxhitwall.wav");
+        boxslide = load_sample("assets/sfx/boxslide.wav");
 
-        song = loadMusic("assets/sfx/music.ogg");
+        song = load_music("assets/sfx/music.ogg");
 
         score = 0;
 
@@ -73,7 +72,7 @@ public:
             { .tile_size = 40, .render_size = 60, .offset_x = 0, .offset_y = 0 });
 
         // Background Music
-        fadeInMusic(song, 1.0F, 1000);
+        fade_in_music(song, 1.0F, 1000);
     }
 
     void update(float dt) override
@@ -83,15 +82,15 @@ public:
         Scene::update(dt);
 
         // Toggle pause
-        if (getKeyDown(Key::Escape)) {
+        if (get_key_down(Key::Escape)) {
             paused = !paused;
         }
 
         // Skip updates when paused
         if (paused) {
             // TO menu
-            if (getKeyDown(Key::M)) {
-                sceneManager.setNextScene(GameState::Menu);
+            if (get_key_down(Key::M)) {
+                manager.set_next_scene(GameState::Menu);
             }
             return;
         }
@@ -101,14 +100,14 @@ public:
         move_acc += dt;
         if (time_acc >= ROBOT_MOVE_INTERVAL) {
             time_acc -= ROBOT_MOVE_INTERVAL;
-            updateRobots();
+            update_robots();
         }
 
         // Use broom
-        broom_active = getKey(Key::Space) && has_broom;
+        broom_active = get_key(Key::Space) && has_broom;
 
         // Character movement
-        characterMove();
+        character_move();
 
         // Die
         if (tilemap.atPixel(position) == TileType::Robot) {
@@ -119,7 +118,7 @@ public:
         }
 
         // Restart Map
-        if (getKeyDown(Key::R)) {
+        if (get_key_down(Key::R)) {
             changeMap();
         }
 
@@ -133,7 +132,7 @@ public:
 
         // Die
         if (lives <= 0) {
-            sceneManager.setNextScene(GameState::Menu);
+            manager.set_next_scene(GameState::Menu);
         }
     }
 
@@ -148,7 +147,7 @@ public:
         for (int t = 0; t < TileMap::HEIGHT; t++) {
             for (int i = 0; i < TileMap::WIDTH; i++) {
                 if (position.x / 40 == i && position.y / 40 == t) {
-                    drawCharacter();
+                    draw_character();
                 }
 
                 tilemap.render({ i, t });
@@ -156,12 +155,12 @@ public:
         }
 
         // Draws Stats
-        rectFill(asw::Quad<float>(0, 0, 1280, 20), asw::Color(0, 0, 0, 200));
+        rect_fill(asw::Quad<float>(0, 0, 1280, 20), asw::Color(0, 0, 0, 200));
 
         text(font, std::format("Score: {}", score), asw::Vec2<float>(0, 0), palette::white);
         text(font, std::format("Lives: {}", lives), asw::Vec2<float>(100, 0), palette::white);
         text(font, tilemap.getLevelText(), asw::Vec2<float>(640, 0), palette::white,
-            asw::TextJustify::CENTER);
+            asw::TextJustify::Center);
 
         // Robot progress meter
         {
@@ -173,12 +172,13 @@ public:
             const float progress = tilemap.getProgress();
 
             // Background
-            rectFill(asw::Quad<float>(meterX, meterY, meterWidth, meterHeight), palette::dark_gray);
+            rect_fill(
+                asw::Quad<float>(meterX, meterY, meterWidth, meterHeight), palette::dark_gray);
 
             // Filled portion (red when robots remain, green when cleared)
             const auto barColor = tilemap.getCompleted() ? palette::green : palette::red;
 
-            rectFill(
+            rect_fill(
                 asw::Quad<float>(meterX, meterY, meterWidth * progress, meterHeight), barColor);
 
             // Border
@@ -187,18 +187,18 @@ public:
             // Label
             text(font,
                 std::format("Robots: {}/{}", tilemap.getRobotsCaptured(), tilemap.getRobotsTotal()),
-                asw::Vec2<float>(meterX - 5.0F, 0), palette::white, asw::TextJustify::RIGHT);
+                asw::Vec2<float>(meterX - 5.0F, 0), palette::white, asw::TextJustify::Right);
         }
 
         // Pause Game
         if (paused) {
-            rectFill(asw::Quad<float>(300, 300, 680, 360), palette::very_dark_green);
+            rect_fill(asw::Quad<float>(300, 300, 680, 360), palette::very_dark_green);
             text(font_pause, "Paused press ESC to resume. Press M to go to the Menu.",
-                asw::Vec2<float>(640, 480), palette::white, asw::TextJustify::CENTER);
+                asw::Vec2<float>(640, 480), palette::white, asw::TextJustify::Center);
         }
     }
 
-    void drawCharacter()
+    void draw_character()
     {
         using namespace asw::draw;
         using namespace asw::input;
@@ -219,32 +219,32 @@ public:
 
         // Draws broom if needed
         if (broom_active) {
-            rotateSprite(broom, float_pos + asw::Vec2<float>(10, 10), rotation);
+            rotate_sprite(broom, float_pos + asw::Vec2<float>(10, 10), rotation);
         }
     }
 
 private:
     // Controls Character Movements
-    void characterMove()
+    void character_move()
     {
         using namespace asw::input;
 
-        if (getKey(Key::Up) || getKey(Key::W)) {
+        if (get_key(Key::Up) || get_key(Key::W)) {
             rotation = 128;
-            moveTowards({ 0, -1 });
-        } else if (getKey(Key::Down) || getKey(Key::S)) {
+            move_towards({ 0, -1 });
+        } else if (get_key(Key::Down) || get_key(Key::S)) {
             rotation = 0;
-            moveTowards({ 0, 1 });
-        } else if (getKey(Key::Left) || getKey(Key::A)) {
+            move_towards({ 0, 1 });
+        } else if (get_key(Key::Left) || get_key(Key::A)) {
             rotation = 64;
-            moveTowards({ -1, 0 });
-        } else if (getKey(Key::Right) || getKey(Key::D)) {
+            move_towards({ -1, 0 });
+        } else if (get_key(Key::Right) || get_key(Key::D)) {
             rotation = 192;
-            moveTowards({ 1, 0 });
+            move_towards({ 1, 0 });
         }
     }
 
-    void moveTowards(const asw::Vec2<int>& target)
+    void move_towards(const asw::Vec2<int>& target)
     {
         using namespace asw::input;
 
@@ -321,7 +321,7 @@ private:
         }
     }
 
-    void updateRobots()
+    void update_robots()
     {
         const auto player_pos = position / 40;
 
@@ -392,7 +392,7 @@ private:
         position = { 40, 40 };
 
         if (!tilemap.load(std::format("assets/levels/level{}.json", level))) {
-            sceneManager.setNextScene(GameState::Win);
+            manager.set_next_scene(GameState::Win);
         }
     }
 

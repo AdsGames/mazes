@@ -4,7 +4,6 @@
 #include <fstream>
 #include <memory>
 
-#include "../button.h"
 #include "../colors.h"
 #include "../globals.h"
 #include "../tilemap.h"
@@ -18,45 +17,67 @@ public:
     void init() override
     {
         // Load font
-        font = asw::assets::loadFont("assets/fonts/jersey-10.ttf", 48);
-
-        // BG Image
-        auto background = createObject<asw::game::Sprite>();
-        background->setTexture(asw::assets::loadTexture("assets/images/background.png"));
-
-        // Sets button positions
-        btn_left = createObject<Button>();
-        btn_left->setImages(asw::assets::loadTexture("assets/images/arrow_left_hover.png"),
-            asw::assets::loadTexture("assets/images/arrow_left.png"));
-        btn_left->transform.position = asw::Vec2<float>(100, 420);
-
-        btn_right = createObject<Button>();
-        btn_right->setImages(asw::assets::loadTexture("assets/images/arrow_right_hover.png"),
-            asw::assets::loadTexture("assets/images/arrow_right.png"));
-        btn_right->transform.position = asw::Vec2<float>(1280 - 64 - 100, 420);
-
-        back = createObject<Button>();
-        back->setColor(palette::red);
-        back->setText("Back");
-        back->setFont(font);
-        back->transform.setPosition(40, 856);
-        back->transform.setSize(200, 64);
-
-        // Level text
-        level_text = createObject<asw::game::Text>();
-        level_text->setFont(font);
-        level_text->setText("");
-        level_text->setColor(palette::white);
-        level_text->setJustify(asw::TextJustify::CENTER);
-        level_text->transform.setPosition(640, 760);
+        const auto font = asw::assets::load_font("assets/fonts/jersey-10.ttf", 48);
 
         // Load sounds
-        click = asw::assets::loadSample("assets/sfx/click.wav");
+        const auto click = asw::assets::load_sample("assets/sfx/click.wav");
+
+        // Build UI tree
+        ui_root_ = asw::ui::Root();
+        ui_root_.root.transform.set_size(1280, 960);
+        ui_root_.root.bg_image = asw::assets::load_texture("assets/images/background.png");
+
+        // Setup buttons
+        auto& btn_left = ui_root_.root.add_child<asw::ui::Button>();
+        btn_left.text = "<";
+        btn_left.font = font;
+        btn_left.transform.set_position(100, 420);
+        btn_left.transform.set_size(64, 64);
+        btn_left.on_click = [this, click]() {
+            const auto file_path = std::format("assets/levels/level{}.json", GameScene::level - 1);
+            if (tilemap_.load(file_path)) {
+                asw::sound::play(click);
+                GameScene::level--;
+            }
+        };
+
+        auto& btn_play = ui_root_.root.add_child<asw::ui::Button>();
+        btn_play.transform.set_position(320, 220);
+        btn_play.transform.set_size(640, 480);
+        btn_play.on_click = [this]() { manager.set_next_scene(GameState::Game); };
+
+        auto& btn_right = ui_root_.root.add_child<asw::ui::Button>();
+        btn_right.text = ">";
+        btn_right.font = font;
+        btn_right.transform.set_position(1280 - 64 - 100, 420);
+        btn_right.transform.set_size(64, 64);
+        btn_right.on_click = [this, click]() {
+            const auto file_path = std::format("assets/levels/level{}.json", GameScene::level + 1);
+            if (tilemap_.load(file_path)) {
+                asw::sound::play(click);
+                GameScene::level++;
+            }
+        };
+
+        auto& back = ui_root_.root.add_child<asw::ui::Button>();
+        back.text = "Back";
+        back.font = font;
+        back.transform.set_position(40, 856);
+        back.transform.set_size(200, 64);
+        back.on_click = [this]() { manager.set_next_scene(GameState::Menu); };
+
+        // Level text
+        auto& level_text = ui_root_.root.add_child<asw::ui::Label>();
+        level_text.font = font;
+        level_text.color = palette::white;
+        level_text.justify = asw::TextJustify::Center;
+        level_text.transform.set_position(640, 760);
+        level_text_ref_ = &level_text;
 
         // Load sprites
         // Load tilemap
-        tilemap.load(std::format("assets/levels/level{}.json", GameScene::level));
-        tilemap.setRenderConfig(
+        tilemap_.load(std::format("assets/levels/level{}.json", GameScene::level));
+        tilemap_.setRenderConfig(
             { .tile_size = 20, .render_size = 30, .offset_x = 320, .offset_y = 220 });
     }
 
@@ -64,43 +85,16 @@ public:
     {
         Scene::update(dt);
 
-        // Level text
-        level_text->setText(std::format("Level {}: {}", GameScene::level, tilemap.getLevelText()));
+        // Text
+        level_text_ref_->text
+            = std::format("Level {}: {}", GameScene::level, tilemap_.getLevelText());
+
+        // UI State
+        ui_root_.update();
 
         // Go to menu
-        if (asw::input::getKeyDown(asw::input::Key::Escape)) {
-            sceneManager.setNextScene(GameState::Menu);
-            return;
-        }
-
-        // Click buttons
-        int delta_level = 0;
-        if (asw::input::getMouseButtonDown(asw::input::MouseButton::Left)) {
-            if (btn_left->hover()) {
-                delta_level = -1;
-            }
-
-            if (btn_right->hover()) {
-                delta_level = 1;
-            }
-
-            if (playQuad.contains(asw::input::mouse.position)) {
-                sceneManager.setNextScene(GameState::Game);
-            }
-
-            if (back->hover()) {
-                sceneManager.setNextScene(GameState::Menu);
-            }
-        }
-
-        // Change level
-        if (delta_level != 0) {
-            const auto file_path
-                = std::format("assets/levels/level{}.json", GameScene::level + delta_level);
-            if (tilemap.load(file_path)) {
-                asw::sound::play(click);
-                GameScene::level += delta_level;
-            }
+        if (asw::input::get_key_down(asw::input::Key::Escape)) {
+            manager.set_next_scene(GameState::Menu);
         }
     }
 
@@ -108,27 +102,21 @@ public:
     {
         Scene::draw();
 
-        tilemap.renderBackground();
+        ui_root_.draw();
+
+        tilemap_.renderBackground();
 
         // Mini tiles tiles
         for (int i = 0; i < TileMap::WIDTH; i++) {
             for (int t = 0; t < TileMap::HEIGHT; t++) {
-                tilemap.render({ i, t });
+                tilemap_.render({ i, t });
             }
         }
     }
 
 private:
-    std::shared_ptr<Button> back;
-    std::shared_ptr<Button> btn_left;
-    std::shared_ptr<Button> btn_right;
+    asw::ui::Root ui_root_;
+    asw::ui::Label* level_text_ref_;
 
-    asw::Font font;
-    asw::Sample click;
-
-    asw::Texture level_select;
-    std::shared_ptr<asw::game::Text> level_text;
-    asw::Quad<float> playQuad { 320, 220, 640, 480 };
-
-    TileMap tilemap;
+    TileMap tilemap_;
 };

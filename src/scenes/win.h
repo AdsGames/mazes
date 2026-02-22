@@ -3,7 +3,6 @@
 
 #include <asw/asw.h>
 
-#include "../button.h"
 #include "../colors.h"
 #include "../globals.h"
 #include "./scenes.h"
@@ -14,19 +13,19 @@ public:
 
     void init() override
     {
-        winscreen = asw::assets::loadTexture("assets/images/winscreen.png");
-        font = asw::assets::loadFont("assets/fonts/jersey-10.ttf", 64);
+        winscreen = asw::assets::load_texture("assets/images/winscreen.png");
+        font = asw::assets::load_font("assets/fonts/jersey-10.ttf", 64);
     }
 
     void update(float dt) override
     {
         Scene::update(dt);
 
-        if (asw::input::getKeyDown(asw::input::Key::Space)
-            || asw::input::getKeyDown(asw::input::Key::Return)
-            || asw::input::getKeyDown(asw::input::Key::Escape)
-            || asw::input::getMouseButtonDown(asw::input::MouseButton::Left)) {
-            sceneManager.setNextScene(GameState::Menu);
+        if (asw::input::get_key_down(asw::input::Key::Space)
+            || asw::input::get_key_down(asw::input::Key::Return)
+            || asw::input::get_key_down(asw::input::Key::Escape)
+            || asw::input::get_mouse_button_down(asw::input::MouseButton::Left)) {
+            manager.set_next_scene(GameState::Menu);
         }
     }
 

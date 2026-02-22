@@ -5,7 +5,6 @@
 #include <memory>
 #include <string>
 
-#include "../button.h"
 #include "./scenes.h"
 
 class MenuScene : public asw::scene::Scene<GameState> {
@@ -16,94 +15,81 @@ public:
     {
 
         // Load fonts
-        font_small = asw::assets::loadFont("assets/fonts/jersey-10.ttf", 48);
-        font_large = asw::assets::loadFont("assets/fonts/jersey-10.ttf", 100);
+        const asw::Font font_small = asw::assets::load_font("assets/fonts/jersey-10.ttf", 48);
+        const asw::Font font_large = asw::assets::load_font("assets/fonts/jersey-10.ttf", 100);
 
-        // Load sprites
-        auto background = createObject<asw::game::Sprite>();
-        background->setTexture(asw::assets::loadTexture("assets/images/background.png"));
+        // Build UI tree
+        ui_root_ = asw::ui::Root();
+        ui_root_.root.transform = { 0, 0, 1280, 960 };
+        ui_root_.root.bg_image = asw::assets::load_texture("assets/images/background.png");
 
-        // Setup buttons
-        btn_start = createObject<Button>();
-        btn_start->setColor(palette::yellow);
-        btn_start->setText("Start");
-        btn_start->setFont(font_small);
-        btn_start->transform.setPosition(40, 656);
-        btn_start->transform.setSize(200, 64);
+        auto& column = ui_root_.root.add_child<asw::ui::VBox>();
+        column.transform = { 40, 700, 420, 400 };
+        column.padding = 0;
+        column.gap = 10;
 
-        btn_help = createObject<Button>();
-        btn_help->setColor(palette::purple_blue);
-        btn_help->setText("Help");
-        btn_help->setFont(font_small);
-        btn_help->transform.setPosition(40, 756);
-        btn_help->transform.setSize(200, 64);
+        auto& play = column.add_child<asw::ui::Button>();
+        play.text = "Play";
+        play.transform.size.y = 48;
+        play.on_click = [this]() { manager.set_next_scene(GameState::LevelSelect); };
+        play.font = font_small;
 
-        btn_quit = createObject<Button>();
-        btn_quit->setColor(palette::red);
-        btn_quit->setText("Quit");
-        btn_quit->setFont(font_small);
-        btn_quit->transform.setPosition(40, 856);
-        btn_quit->transform.setSize(200, 64);
+        auto& help = column.add_child<asw::ui::Button>();
+        help.text = "Help";
+        help.transform.size.y = 48;
+        help.on_click = [this]() { spr_help_->visible = !spr_help_->visible; };
+        help.font = font_small;
+
+        auto& quit = column.add_child<asw::ui::Button>();
+        quit.text = "Quit";
+        quit.transform.size.y = 48;
+        quit.on_click = []() { asw::core::exit = true; };
+        quit.font = font_small;
 
         // Add text
-        auto title_text = createObject<asw::game::Text>();
-        title_text->setFont(font_large);
-        title_text->setText("Mazes");
-        title_text->setColor(palette::white);
-        title_text->setJustify(asw::TextJustify::LEFT);
-        title_text->transform.setPosition(40, 540);
+        auto& title_text = ui_root_.root.add_child<asw::ui::Label>();
+        title_text.font = font_large;
+        title_text.text = "Mazes";
+        title_text.color = palette::white;
+        title_text.justify = asw::TextJustify::Left;
+        title_text.transform.set_position(40, 540);
 
-        auto copyright_text = createObject<asw::game::Text>();
-        copyright_text->setFont(font_small);
-        copyright_text->setText("© 2014 A.D.S. Games");
-        copyright_text->setColor(palette::white);
-        copyright_text->setJustify(asw::TextJustify::RIGHT);
-        copyright_text->transform.setPosition(1240, 900);
+        auto& copyright_text = ui_root_.root.add_child<asw::ui::Label>();
+        copyright_text.font = font_small;
+        copyright_text.text = "© 2014 A.D.S. Games";
+        copyright_text.color = palette::white;
+        copyright_text.justify = asw::TextJustify::Right;
+        copyright_text.transform.set_position(1240, 900);
 
         // Help
-        spr_help = createObject<asw::game::Sprite>();
-        spr_help->setTexture(asw::assets::loadTexture("assets/images/help.png"));
-        spr_help->active = false;
+        spr_help_ = &ui_root_.root.add_child<asw::ui::Panel>();
+        spr_help_->bg_image = asw::assets::load_texture("assets/images/help.png");
+        spr_help_->transform.set_size(1280, 960);
+        spr_help_->visible = false;
     }
 
     void update(float dt) override
     {
-        using namespace asw::input;
-
         Scene::update(dt);
 
-        // Checks for mouse press
-        if (getMouseButtonDown(MouseButton::Left) && btn_start->hover()) {
-            sceneManager.setNextScene(GameState::LevelSelect);
+        if (spr_help_->visible
+            && (asw::input::keyboard.any_pressed
+                || asw::input::get_mouse_button(asw::input::MouseButton::Left))) {
+            spr_help_->visible = false;
+            return;
         }
 
-        if (getMouseButtonDown(MouseButton::Left) && btn_help->hover() && !spr_help->active) {
-            spr_help->active = !spr_help->active;
-        } else if (getMouseButtonDown(MouseButton::Left) && spr_help->active) {
-            spr_help->active = false;
-        }
+        ui_root_.update();
+    }
 
-        if (getMouseButtonDown(MouseButton::Left) && btn_quit->hover()) {
-            asw::core::exit = true;
-        }
-
-        if (spr_help->active && keyboard.anyPressed) {
-            spr_help->active = false;
-        } else if (getKeyDown(Key::Escape)) {
-            asw::core::exit = true;
-        }
+    void draw() override
+    {
+        Scene::draw();
+        ui_root_.draw();
     }
 
 private:
-    // Creates Buttons
-    std::shared_ptr<Button> btn_start;
-    std::shared_ptr<Button> btn_help;
-    std::shared_ptr<Button> btn_quit;
-
     // Help open
-    std::shared_ptr<asw::game::Sprite> spr_help;
-
-    // Fonts
-    asw::Font font_small;
-    asw::Font font_large;
+    asw::ui::Panel* spr_help_ { nullptr };
+    asw::ui::Root ui_root_;
 };

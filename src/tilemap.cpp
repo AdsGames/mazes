@@ -37,13 +37,13 @@ bool TileMap::load(const std::string& path)
 
     // Check layers
     if (!doc.contains("layers")) {
-        asw::log::warn("Error: No layers found in file " + path);
+        asw::log::warn("Error: No layers found in file {}", path);
         file.close();
         return false;
     }
 
     if (doc["layers"].size() != 1) {
-        asw::log::warn("Error: Invalid number of layers in file " + path);
+        asw::log::warn("Error: Invalid number of layers in file {}", path);
         file.close();
         return false;
     }
@@ -66,7 +66,7 @@ bool TileMap::load(const std::string& path)
     // Background color
     background = asw::Color(179, 185, 209); // Default to gray
     if (doc.contains("backgroundcolor")) {
-        background = asw::Color::fromHex(doc["backgroundcolor"]);
+        background = asw::Color::from_hex(doc["backgroundcolor"]);
     }
 
     // Load data into vector
@@ -99,5 +99,5 @@ void TileMap::renderBackground() const
     const auto pos = asw::Quad<float>(render_config.offset_x, render_config.offset_y,
         WIDTH * render_config.tile_size, HEIGHT * render_config.tile_size);
 
-    asw::draw::rectFill(pos, background);
+    asw::draw::rect_fill(pos, background);
 }

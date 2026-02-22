@@ -17,14 +17,14 @@ class TileRenderer {
 public:
     TileRenderer()
     {
-        robot = asw::assets::loadTexture("assets/images/blocks/robot.png");
-        box = asw::assets::loadTexture("assets/images/blocks/box.png");
-        scrap = asw::assets::loadTexture("assets/images/blocks/scrap.png");
-        wall = asw::assets::loadTexture("assets/images/blocks/wall.png");
-        garbagecan = asw::assets::loadTexture("assets/images/blocks/garbagecan.png");
-        janitorroom = asw::assets::loadTexture("assets/images/blocks/janitor_room.png");
-        wall2 = asw::assets::loadTexture("assets/images/blocks/wall2.png");
-        janitorroomopen = asw::assets::loadTexture("assets/images/blocks/janitor_room_open.png");
+        robot = asw::assets::load_texture("assets/images/blocks/robot.png");
+        box = asw::assets::load_texture("assets/images/blocks/box.png");
+        scrap = asw::assets::load_texture("assets/images/blocks/scrap.png");
+        wall = asw::assets::load_texture("assets/images/blocks/wall.png");
+        garbagecan = asw::assets::load_texture("assets/images/blocks/garbagecan.png");
+        janitorroom = asw::assets::load_texture("assets/images/blocks/janitor_room.png");
+        wall2 = asw::assets::load_texture("assets/images/blocks/wall2.png");
+        janitorroomopen = asw::assets::load_texture("assets/images/blocks/janitor_room_open.png");
     }
 
     void renderTile(const TileType& tile, int x, int y, const TileRenderConfig& config) const
@@ -32,9 +32,9 @@ public:
         auto texture = getTileTexture(tile);
 
         if (texture) {
-            const auto position = asw::Quad<float>(x * config.tile_size + config.offset_x,
-                y * config.tile_size + config.offset_y, config.render_size, config.render_size);
-            asw::draw::stretchSprite(texture, position);
+            const auto position = asw::Quad<float>((x * config.tile_size) + config.offset_x,
+                (y * config.tile_size) + config.offset_y, config.render_size, config.render_size);
+            asw::draw::stretch_sprite(texture, position);
         }
     }
 

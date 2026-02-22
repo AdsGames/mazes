@@ -20,17 +20,17 @@ int main()
 
     // Initializing
     asw::core::init(1280, 960);
-    asw::display::setTitle("Mazes");
-    asw::display::setIcon("assets/mazes.ico");
+    asw::display::set_title("Mazes");
+    asw::display::set_icon("assets/mazes.ico");
 
     // Starts Game
     auto app = asw::scene::SceneManager<GameState>();
-    app.registerScene<GameScene>(Game, app);
-    app.registerScene<MenuScene>(Menu, app);
-    app.registerScene<WinScene>(Win, app);
-    app.registerScene<LevelSelectScene>(LevelSelect, app);
-    app.registerScene<IntroScene>(Intro, app);
-    app.setNextScene(Intro);
+    app.register_scene<GameScene>(Game, app);
+    app.register_scene<MenuScene>(Menu, app);
+    app.register_scene<WinScene>(Win, app);
+    app.register_scene<LevelSelectScene>(LevelSelect, app);
+    app.register_scene<IntroScene>(Intro, app);
+    app.set_next_scene(Intro);
     app.start();
 
     return 0;
