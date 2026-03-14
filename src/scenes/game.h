@@ -82,14 +82,14 @@ public:
         Scene::update(dt);
 
         // Toggle pause
-        if (get_key_down(Key::Escape)) {
+        if (is_action_pressed("pause")) {
             paused = !paused;
         }
 
         // Skip updates when paused
         if (paused) {
             // TO menu
-            if (get_key_down(Key::M)) {
+            if (is_action_pressed("back")) {
                 manager.set_next_scene(GameState::Menu);
             }
             return;
@@ -104,7 +104,7 @@ public:
         }
 
         // Use broom
-        broom_active = get_key(Key::Space) && has_broom;
+        broom_active = is_action_down("interact") && has_broom;
 
         // Character movement
         character_move();
@@ -118,7 +118,7 @@ public:
         }
 
         // Restart Map
-        if (get_key_down(Key::R)) {
+        if (is_action_pressed("restart")) {
             changeMap();
         }
 
@@ -229,16 +229,16 @@ private:
     {
         using namespace asw::input;
 
-        if (get_key(Key::Up) || get_key(Key::W)) {
+        if (is_action_down("up")) {
             rotation = 128;
             move_towards({ 0, -1 });
-        } else if (get_key(Key::Down) || get_key(Key::S)) {
+        } else if (is_action_down("down")) {
             rotation = 0;
             move_towards({ 0, 1 });
-        } else if (get_key(Key::Left) || get_key(Key::A)) {
+        } else if (is_action_down("left")) {
             rotation = 64;
             move_towards({ -1, 0 });
-        } else if (get_key(Key::Right) || get_key(Key::D)) {
+        } else if (is_action_down("right")) {
             rotation = 192;
             move_towards({ 1, 0 });
         }

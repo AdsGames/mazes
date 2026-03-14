@@ -72,9 +72,7 @@ public:
     {
         Scene::update(dt);
 
-        if (spr_help_->visible
-            && (asw::input::keyboard.any_pressed
-                || asw::input::get_mouse_button(asw::input::MouseButton::Left))) {
+        if (spr_help_->visible && asw::input::is_action_pressed("back")) {
             spr_help_->visible = false;
             return;
         }

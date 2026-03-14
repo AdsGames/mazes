@@ -21,10 +21,7 @@ public:
     {
         Scene::update(dt);
 
-        if (asw::input::get_key_down(asw::input::Key::Space)
-            || asw::input::get_key_down(asw::input::Key::Return)
-            || asw::input::get_key_down(asw::input::Key::Escape)
-            || asw::input::get_mouse_button_down(asw::input::MouseButton::Left)) {
+        if (asw::input::is_action_pressed("interact") || asw::input::is_action_pressed("back")) {
             manager.set_next_scene(GameState::Menu);
         }
     }
