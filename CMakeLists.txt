@@ -8,7 +8,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/target)
 
 include(cmake/get_cpm.cmake)
-CPMAddPackage("gh:adsgames/asw#9e541deba7c39097e47b6beee8e9ba3afb834667")
+CPMAddPackage("gh:adsgames/asw#1124854a08dc5b3076063aad200f9f0b566f950f")
 CPMAddPackage("gh:nlohmann/json@3.11.3")
 
 # Source code

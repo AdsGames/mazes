@@ -43,7 +43,7 @@ public:
         auto& quit = column.add_child<asw::ui::Button>();
         quit.text = "Quit";
         quit.transform.size.y = 48;
-        quit.on_click = []() { asw::core::exit = true; };
+        quit.on_click = []() { asw::core::exit(); };
         quit.font = font_small;
 
         // Add text

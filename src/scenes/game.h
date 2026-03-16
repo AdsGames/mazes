@@ -72,7 +72,7 @@ public:
             { .tile_size = 40, .render_size = 60, .offset_x = 0, .offset_y = 0 });
 
         // Background Music
-        fade_in_music(song, 1.0F, 1000);
+        asw::sound::play_music(song, 1.0F, 1000);
     }
 
     void update(float dt) override
