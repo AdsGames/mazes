@@ -21,6 +21,7 @@ int main()
 
     // Initializing
     asw::core::init(1280, 960);
+    asw::core::print_info();
 
     // Starts Game
     auto app = asw::scene::SceneManager<GameState>();

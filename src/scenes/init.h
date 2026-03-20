@@ -20,22 +20,22 @@ public:
         bind_action("right", KeyBinding { Key::Right });
         bind_action("right", KeyBinding { Key::D });
         bind_action("right", ControllerButtonBinding { ControllerButton::DPadRight, 0 });
-        bind_action("right", ControllerAxisBinding { ControllerAxis::LeftX, 0, 0.1F, true });
+        bind_action("right", ControllerAxisBinding { ControllerAxis::LeftX, 0, 0.5F, true });
 
         bind_action("left", KeyBinding { Key::Left });
         bind_action("left", KeyBinding { Key::A });
         bind_action("left", ControllerButtonBinding { ControllerButton::DPadLeft, 0 });
-        bind_action("left", ControllerAxisBinding { ControllerAxis::LeftX, 0, -0.1F, true });
+        bind_action("left", ControllerAxisBinding { ControllerAxis::LeftX, 0, 0.5F, false });
 
         bind_action("up", KeyBinding { Key::Up });
         bind_action("up", KeyBinding { Key::W });
         bind_action("up", ControllerButtonBinding { ControllerButton::DPadUp, 0 });
-        // bind_action("up", ControllerAxisBinding { ControllerAxis::LeftY, 0, -0.1F, false });
+        bind_action("up", ControllerAxisBinding { ControllerAxis::LeftY, 0, 0.5F, false });
 
         bind_action("down", KeyBinding { Key::Down });
         bind_action("down", KeyBinding { Key::S });
         bind_action("down", ControllerButtonBinding { ControllerButton::DPadDown, 0 });
-        // bind_action("down", ControllerAxisBinding { ControllerAxis::LeftY, 0, 0.1F, true });
+        bind_action("down", ControllerAxisBinding { ControllerAxis::LeftY, 0, 0.5F, true });
 
         bind_action("interact", KeyBinding { Key::Return });
         bind_action("interact", KeyBinding { Key::Space });

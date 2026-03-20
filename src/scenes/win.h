@@ -28,8 +28,8 @@ public:
 
     void draw() override
     {
-        asw::draw::sprite(winscreen, asw::Vec2<float>(0, 0));
-        asw::draw::text(font, std::to_string(score), asw::Vec2<float>(620, 850), palette::black);
+        asw::draw::sprite(winscreen, asw::Vec2f(0, 0));
+        asw::draw::text(font, std::to_string(score), asw::Vec2f(620, 850), palette::black);
     }
 
 private:
