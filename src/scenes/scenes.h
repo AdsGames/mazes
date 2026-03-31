@@ -1,4 +1,4 @@
 #pragma once
 
 /// Scene stuff to get working in browser
-enum class GameState { Intro, Menu, LevelSelect, Game, Win };
+enum class GameState { Init, Intro, Menu, LevelSelect, Game, Win };

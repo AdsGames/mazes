@@ -5,23 +5,28 @@
 
 using namespace asw::assets;
 
-TileType TileMap::at(const asw::Vec2<int>& pos) const
+TileType TileMap::at(const asw::Vec2i& pos) const
 {
+    if (pos.x < 0 || pos.x >= WIDTH || pos.y < 0 || pos.y >= HEIGHT) {
+        asw::log::warn("Warning: Grid position ({}, {}) is out of bounds", pos.x, pos.y);
+        return TileType::Empty;
+    }
+
     return tiles[pos.x][pos.y];
 }
 
-TileType TileMap::atPixel(const asw::Vec2<int>& pos) const
+TileType TileMap::atPixel(const asw::Vec2i& pos) const
 {
-    return tiles[pos.x / render_config.tile_size][pos.y / render_config.tile_size];
+    return at(asw::Vec2i(pos.x / render_config.tile_size, pos.y / render_config.tile_size));
 }
 
-TileType TileMap::getValue(const asw::Vec2<int>& pos) const
+void TileMap::setValue(const asw::Vec2i& pos, TileType type)
 {
-    return tiles[pos.x][pos.y];
-}
+    if (pos.x < 0 || pos.x >= WIDTH || pos.y < 0 || pos.y >= HEIGHT) {
+        asw::log::warn("Warning: Grid position ({}, {}) is out of bounds", pos.x, pos.y);
+        return;
+    }
 
-void TileMap::setValue(const asw::Vec2<int>& pos, TileType type)
-{
     tiles[pos.x][pos.y] = type;
 }
 
@@ -89,14 +94,14 @@ bool TileMap::load(const std::string& path)
     return true;
 }
 
-void TileMap::render(const asw::Vec2<int>& pos) const
+void TileMap::render(const asw::Vec2i& pos) const
 {
     tile_renderer.renderTile(tiles[pos.x][pos.y], pos.x, pos.y, render_config);
 }
 
 void TileMap::renderBackground() const
 {
-    const auto pos = asw::Quad<float>(render_config.offset_x, render_config.offset_y,
+    const auto pos = asw::Quadf(render_config.offset_x, render_config.offset_y,
         WIDTH * render_config.tile_size, HEIGHT * render_config.tile_size);
 
     asw::draw::rect_fill(pos, background);

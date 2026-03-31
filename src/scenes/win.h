@@ -21,18 +21,15 @@ public:
     {
         Scene::update(dt);
 
-        if (asw::input::get_key_down(asw::input::Key::Space)
-            || asw::input::get_key_down(asw::input::Key::Return)
-            || asw::input::get_key_down(asw::input::Key::Escape)
-            || asw::input::get_mouse_button_down(asw::input::MouseButton::Left)) {
+        if (asw::input::is_action_pressed("interact") || asw::input::is_action_pressed("back")) {
             manager.set_next_scene(GameState::Menu);
         }
     }
 
     void draw() override
     {
-        asw::draw::sprite(winscreen, asw::Vec2<float>(0, 0));
-        asw::draw::text(font, std::to_string(score), asw::Vec2<float>(620, 850), palette::black);
+        asw::draw::sprite(winscreen, asw::Vec2f(0, 0));
+        asw::draw::text(font, std::to_string(score), asw::Vec2f(620, 850), palette::black);
     }
 
 private:

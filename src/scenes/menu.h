@@ -43,7 +43,7 @@ public:
         auto& quit = column.add_child<asw::ui::Button>();
         quit.text = "Quit";
         quit.transform.size.y = 48;
-        quit.on_click = []() { asw::core::exit = true; };
+        quit.on_click = []() { asw::core::exit(); };
         quit.font = font_small;
 
         // Add text
@@ -72,9 +72,7 @@ public:
     {
         Scene::update(dt);
 
-        if (spr_help_->visible
-            && (asw::input::keyboard.any_pressed
-                || asw::input::get_mouse_button(asw::input::MouseButton::Left))) {
+        if (spr_help_->visible && asw::input::is_action_pressed("back")) {
             spr_help_->visible = false;
             return;
         }

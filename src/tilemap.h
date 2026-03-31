@@ -32,7 +32,7 @@ public:
         auto texture = getTileTexture(tile);
 
         if (texture) {
-            const auto position = asw::Quad<float>((x * config.tile_size) + config.offset_x,
+            const auto position = asw::Quadf((x * config.tile_size) + config.offset_x,
                 (y * config.tile_size) + config.offset_y, config.render_size, config.render_size);
             asw::draw::stretch_sprite(texture, position);
         }
@@ -79,20 +79,19 @@ public:
     static constexpr int HEIGHT = 24;
 
     // Grid coordinate access
-    TileType at(const asw::Vec2<int>& pos) const;
+    TileType at(const asw::Vec2i& pos) const;
 
     // Pixel-to-grid coordinate access
-    TileType atPixel(const asw::Vec2<int>& pos) const;
+    TileType atPixel(const asw::Vec2i& pos) const;
 
     // Coordinate checking helpers
-    TileType getValue(const asw::Vec2<int>& pos) const;
-    void setValue(const asw::Vec2<int>& pos, TileType type);
+    void setValue(const asw::Vec2i& pos, TileType type);
 
     // Map file loading
     bool load(const std::string& path);
 
     // Draw at position
-    void render(const asw::Vec2<int>& pos) const;
+    void render(const asw::Vec2i& pos) const;
     void renderBackground() const;
 
     // Set render config

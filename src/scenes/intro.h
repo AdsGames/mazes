@@ -45,10 +45,10 @@ public:
 
         // Show the appropriate image for this frame
         if (frame == 0) {
-            asw::draw::sprite(background_, asw::Vec2<float>(0, 0));
-            asw::draw::sprite(intro_, asw::Vec2<float>(0, 0));
+            asw::draw::sprite(background_, asw::Vec2f(0, 0));
+            asw::draw::sprite(intro_, asw::Vec2f(0, 0));
         } else {
-            asw::draw::sprite(splash_, asw::Vec2<float>(0, 0));
+            asw::draw::sprite(splash_, asw::Vec2f(0, 0));
         }
 
         // Compute alpha: fade in → hold → fade out
