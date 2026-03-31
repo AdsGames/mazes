@@ -21,7 +21,7 @@ public:
     {
         Scene::update(dt);
 
-        if (asw::input::is_action_pressed("interact") || asw::input::is_action_pressed("back")) {
+        if (asw::input::get_action_down("interact") || asw::input::get_action_down("back")) {
             manager.set_next_scene(GameState::Menu);
         }
     }

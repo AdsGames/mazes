@@ -72,7 +72,7 @@ public:
             { .tile_size = 40, .render_size = 60, .offset_x = 0, .offset_y = 0 });
 
         // Background Music
-        asw::sound::play_music(song, 1.0F, 1000);
+        play_music(song, 1.0F, 1.0F);
     }
 
     void update(float dt) override
@@ -82,14 +82,14 @@ public:
         Scene::update(dt);
 
         // Toggle pause
-        if (is_action_pressed("pause")) {
+        if (get_action_down("pause")) {
             paused = !paused;
         }
 
         // Skip updates when paused
         if (paused) {
             // TO menu
-            if (is_action_pressed("back")) {
+            if (get_action_down("back")) {
                 manager.set_next_scene(GameState::Menu);
             }
             return;
@@ -104,7 +104,7 @@ public:
         }
 
         // Use broom
-        broom_active = is_action_down("interact") && has_broom;
+        broom_active = get_action_down("interact") && has_broom;
 
         // Character movement
         character_move();
@@ -118,7 +118,7 @@ public:
         }
 
         // Restart Map
-        if (is_action_pressed("restart")) {
+        if (get_action_down("restart")) {
             changeMap();
         }
 
@@ -227,19 +227,19 @@ private:
     {
         using namespace asw::input;
 
-        if (is_action_down("up")) {
+        if (get_action_down("up")) {
             rotation = 128;
             move_towards({ 0, -1 });
         }
-        if (is_action_down("down")) {
+        if (get_action_down("down")) {
             rotation = 0;
             move_towards({ 0, 1 });
         }
-        if (is_action_down("left")) {
+        if (get_action_down("left")) {
             rotation = 64;
             move_towards({ -1, 0 });
         }
-        if (is_action_down("right")) {
+        if (get_action_down("right")) {
             rotation = 192;
             move_towards({ 1, 0 });
         }

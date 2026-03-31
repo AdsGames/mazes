@@ -34,5 +34,7 @@ int main()
     app.set_next_scene(Init);
     app.start();
 
+    asw::core::shutdown();
+
     return 0;
 }

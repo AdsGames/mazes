@@ -78,16 +78,16 @@ public:
         _ui_root.update();
 
         // Keyboard shortcuts
-        if (asw::input::is_action_pressed("back")) {
+        if (asw::input::get_action_down("back")) {
             manager.set_next_scene(GameState::Menu);
         }
-        if (asw::input::is_action_pressed("left")) {
+        if (asw::input::get_action_down("left")) {
             previous_level();
         }
-        if (asw::input::is_action_pressed("right")) {
+        if (asw::input::get_action_down("right")) {
             next_level();
         }
-        if (asw::input::is_action_pressed("interact")) {
+        if (asw::input::get_action_down("interact")) {
             select_level();
         }
     }

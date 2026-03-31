@@ -72,7 +72,7 @@ public:
     {
         Scene::update(dt);
 
-        if (spr_help_->visible && asw::input::is_action_pressed("back")) {
+        if (spr_help_->visible && asw::input::get_action_down("back")) {
             spr_help_->visible = false;
             return;
         }
