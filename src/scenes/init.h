@@ -19,36 +19,36 @@ public:
         // Bind global actions
         bind_action("right", KeyBinding { Key::Right });
         bind_action("right", KeyBinding { Key::D });
-        bind_action("right", ControllerButtonBinding { ControllerButton::DPadRight, 0 });
-        bind_action("right", ControllerAxisBinding { ControllerAxis::LeftX, 0, 0.5F, true });
+        bind_action("right", ControllerButtonBinding { ControllerButton::DPadRight, ANY_CONTROLLER });
+        bind_action("right", ControllerAxisBinding { ControllerAxis::LeftX, ANY_CONTROLLER, 0.5F, true });
 
         bind_action("left", KeyBinding { Key::Left });
         bind_action("left", KeyBinding { Key::A });
-        bind_action("left", ControllerButtonBinding { ControllerButton::DPadLeft, 0 });
-        bind_action("left", ControllerAxisBinding { ControllerAxis::LeftX, 0, 0.5F, false });
+        bind_action("left", ControllerButtonBinding { ControllerButton::DPadLeft, ANY_CONTROLLER });
+        bind_action("left", ControllerAxisBinding { ControllerAxis::LeftX, ANY_CONTROLLER, 0.5F, false });
 
         bind_action("up", KeyBinding { Key::Up });
         bind_action("up", KeyBinding { Key::W });
-        bind_action("up", ControllerButtonBinding { ControllerButton::DPadUp, 0 });
-        bind_action("up", ControllerAxisBinding { ControllerAxis::LeftY, 0, 0.5F, false });
+        bind_action("up", ControllerButtonBinding { ControllerButton::DPadUp, ANY_CONTROLLER });
+        bind_action("up", ControllerAxisBinding { ControllerAxis::LeftY, ANY_CONTROLLER, 0.5F, false });
 
         bind_action("down", KeyBinding { Key::Down });
         bind_action("down", KeyBinding { Key::S });
-        bind_action("down", ControllerButtonBinding { ControllerButton::DPadDown, 0 });
-        bind_action("down", ControllerAxisBinding { ControllerAxis::LeftY, 0, 0.5F, true });
+        bind_action("down", ControllerButtonBinding { ControllerButton::DPadDown, ANY_CONTROLLER });
+        bind_action("down", ControllerAxisBinding { ControllerAxis::LeftY, ANY_CONTROLLER, 0.5F, true });
 
         bind_action("interact", KeyBinding { Key::Return });
         bind_action("interact", KeyBinding { Key::Space });
-        bind_action("interact", ControllerButtonBinding { ControllerButton::A, 0 });
+        bind_action("interact", ControllerButtonBinding { ControllerButton::A, ANY_CONTROLLER });
 
         bind_action("back", KeyBinding { Key::Escape });
-        bind_action("back", ControllerButtonBinding { ControllerButton::Back, 0 });
+        bind_action("back", ControllerButtonBinding { ControllerButton::Back, ANY_CONTROLLER });
 
         bind_action("pause", KeyBinding { Key::P });
-        bind_action("pause", ControllerButtonBinding { ControllerButton::Start, 0 });
+        bind_action("pause", ControllerButtonBinding { ControllerButton::Start, ANY_CONTROLLER });
     }
 
-    void update(float dt) override
+    void update(float /*dt*/) override
     {
         manager.set_next_scene(GameState::Intro);
     }

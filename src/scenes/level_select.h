@@ -21,13 +21,25 @@ public:
 
         // Build UI tree
         _ui_root = asw::ui::Root();
-        _ui_root.root.transform.set_size(1280, 960);
+        _ui_root.ctx.theme.font = font;
+        // Keyboard and controller input is handled in update(), so point the UI's
+        // own navigation at an unbound action. An empty name would fall back to
+        // the arrow keys, Tab and Enter.
+        _ui_root.ctx.navigation = { .up = UNBOUND,
+            .down = UNBOUND,
+            .left = UNBOUND,
+            .right = UNBOUND,
+            .next = UNBOUND,
+            .prev = UNBOUND,
+            .activate = UNBOUND,
+            .back = "back" };
+        _ui_root.on_back = [this]() { manager.set_next_scene(GameState::Menu); };
         _ui_root.root.bg_image = asw::assets::load_texture("assets/images/background.png");
 
-        // Setup buttons
+        // Setup buttons. They are pointer targets: left, right and interact
+        // change and play the level directly in update().
         auto& btn_left = _ui_root.root.add_child<asw::ui::Button>();
         btn_left.text = "<";
-        btn_left.font = font;
         btn_left.transform.set_position(100, 420);
         btn_left.transform.set_size(64, 64);
         btn_left.on_click = [this]() { previous_level(); };
@@ -39,27 +51,24 @@ public:
 
         auto& btn_right = _ui_root.root.add_child<asw::ui::Button>();
         btn_right.text = ">";
-        btn_right.font = font;
         btn_right.transform.set_position(1280 - 64 - 100, 420);
         btn_right.transform.set_size(64, 64);
         btn_right.on_click = [this]() { next_level(); };
 
         auto& back = _ui_root.root.add_child<asw::ui::Button>();
         back.text = "Back";
-        back.font = font;
         back.transform.set_position(40, 856);
         back.transform.set_size(200, 64);
         back.on_click = [this]() { manager.set_next_scene(GameState::Menu); };
 
         // Level text
         auto& level_text = _ui_root.root.add_child<asw::ui::Label>();
-        level_text.font = font;
-        level_text.color = palette::white;
         level_text.justify = asw::TextJustify::Center;
         level_text.transform.set_position(640, 760);
         _level_text_ref = &level_text;
 
-        // Load sprites
+        _click = asw::assets::load_sample("assets/sfx/click.wav");
+
         // Load tilemap
         _tilemap.load(std::format("assets/levels/level{}.json", GameScene::level));
         _tilemap.setRenderConfig(
@@ -77,10 +86,7 @@ public:
         // UI State
         _ui_root.update();
 
-        // Keyboard shortcuts
-        if (asw::input::get_action_down("back")) {
-            manager.set_next_scene(GameState::Menu);
-        }
+        // Keyboard and controller shortcuts
         if (asw::input::get_action_down("left")) {
             previous_level();
         }
@@ -109,6 +115,8 @@ public:
     }
 
 private:
+    static constexpr const char* UNBOUND = "unbound";
+
     asw::ui::Root _ui_root;
     asw::ui::Label* _level_text_ref;
     asw::Sample _click;
@@ -119,7 +127,7 @@ private:
     {
         const auto file_path = std::format("assets/levels/level{}.json", GameScene::level + 1);
         if (_tilemap.load(file_path)) {
-            asw::sound::play(_click);
+            asw::sound::play(_click, { .bus = asw::sound::Bus::Ui });
             GameScene::level++;
         }
     }
@@ -128,7 +136,7 @@ private:
     {
         const auto file_path = std::format("assets/levels/level{}.json", GameScene::level - 1);
         if (_tilemap.load(file_path)) {
-            asw::sound::play(_click);
+            asw::sound::play(_click, { .bus = asw::sound::Bus::Ui });
             GameScene::level--;
         }
     }

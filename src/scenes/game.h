@@ -5,6 +5,7 @@
 #include <cmath>
 #include <ctime>
 #include <format>
+#include <numbers>
 #include <sstream>
 #include <string>
 
@@ -81,17 +82,19 @@ public:
 
         Scene::update(dt);
 
-        // Toggle pause
-        if (get_action_down("pause")) {
-            paused = !paused;
-        }
-
         // Skip updates when paused
         if (paused) {
-            // TO menu
-            if (get_action_down("back")) {
+            if (get_action_down("pause")) {
+                paused = false;
+            } else if (get_action_down("back")) {
                 manager.set_next_scene(GameState::Menu);
             }
+            return;
+        }
+
+        // Pause
+        if (get_action_down("pause") || get_action_down("back")) {
+            paused = true;
             return;
         }
 
@@ -104,7 +107,7 @@ public:
         }
 
         // Use broom
-        broom_active = get_action_down("interact") && has_broom;
+        broom_active = get_action("interact") && has_broom;
 
         // Character movement
         character_move();
@@ -191,7 +194,7 @@ public:
         // Pause Game
         if (paused) {
             rect_fill(asw::Quadf(300, 300, 680, 360), palette::very_dark_green);
-            text(font_pause, "Paused press ESC to resume. Press M to go to the Menu.",
+            text(font_pause, "Paused. Press P to resume. Press ESC to go to the Menu.",
                 asw::Vec2f(640, 480), palette::white, asw::TextJustify::Center);
         }
     }
@@ -217,7 +220,8 @@ public:
 
         // Draws broom if needed
         if (broom_active) {
-            rotate_sprite(broom, float_pos + asw::Vec2f(10, 10), rotation);
+            rotate_sprite(broom, float_pos + asw::Vec2f(10, 10),
+                static_cast<float>(rotation) * std::numbers::pi_v<float> / 128.0F);
         }
     }
 
@@ -227,19 +231,19 @@ private:
     {
         using namespace asw::input;
 
-        if (get_action_down("up")) {
+        if (get_action("up")) {
             rotation = 128;
             move_towards({ 0, -1 });
         }
-        if (get_action_down("down")) {
+        if (get_action("down")) {
             rotation = 0;
             move_towards({ 0, 1 });
         }
-        if (get_action_down("left")) {
+        if (get_action("left")) {
             rotation = 64;
             move_towards({ -1, 0 });
         }
-        if (get_action_down("right")) {
+        if (get_action("right")) {
             rotation = 192;
             move_towards({ 1, 0 });
         }
