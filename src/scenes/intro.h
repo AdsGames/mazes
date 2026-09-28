@@ -27,11 +27,13 @@ public:
     void update(float dt) override
     {
         using namespace asw::input;
-        const auto& keyboard = get_keyboard();
         Scene::update(dt);
         time_acc_ += dt;
 
-        if (keyboard.any_pressed || time_acc_ >= INTRO_DURATION) {
+        const bool skip = get_keyboard().any_pressed || get_action_down("interact")
+            || get_action_down("back") || get_action_down("pause");
+
+        if (skip || time_acc_ >= INTRO_DURATION) {
             manager.set_next_scene(GameState::Menu);
         }
     }
