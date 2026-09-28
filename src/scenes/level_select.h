@@ -21,40 +21,42 @@ public:
 
         // Build UI tree
         _ui_root = asw::ui::Root();
-        _ui_root.root.transform.set_size(1280, 960);
+        _ui_root.ctx.theme.font = font;
+        _ui_root.ctx.navigation.back = "back";
+        _ui_root.on_back = [this]() { manager.set_next_scene(GameState::Menu); };
         _ui_root.root.bg_image = asw::assets::load_texture("assets/images/background.png");
 
-        // Setup buttons
+        // Setup buttons. They are pointer targets only: left, right and interact
+        // change and play the level directly below.
         auto& btn_left = _ui_root.root.add_child<asw::ui::Button>();
         btn_left.text = "<";
-        btn_left.font = font;
+        btn_left.focusable = false;
         btn_left.transform.set_position(100, 420);
         btn_left.transform.set_size(64, 64);
         btn_left.on_click = [this]() { previous_level(); };
 
         auto& btn_play = _ui_root.root.add_child<asw::ui::Button>();
+        btn_play.focusable = false;
         btn_play.transform.set_position(320, 220);
         btn_play.transform.set_size(640, 480);
         btn_play.on_click = [this]() { manager.set_next_scene(GameState::Game); };
 
         auto& btn_right = _ui_root.root.add_child<asw::ui::Button>();
         btn_right.text = ">";
-        btn_right.font = font;
+        btn_right.focusable = false;
         btn_right.transform.set_position(1280 - 64 - 100, 420);
         btn_right.transform.set_size(64, 64);
         btn_right.on_click = [this]() { next_level(); };
 
         auto& back = _ui_root.root.add_child<asw::ui::Button>();
         back.text = "Back";
-        back.font = font;
+        back.focusable = false;
         back.transform.set_position(40, 856);
         back.transform.set_size(200, 64);
         back.on_click = [this]() { manager.set_next_scene(GameState::Menu); };
 
         // Level text
         auto& level_text = _ui_root.root.add_child<asw::ui::Label>();
-        level_text.font = font;
-        level_text.color = palette::white;
         level_text.justify = asw::TextJustify::Center;
         level_text.transform.set_position(640, 760);
         _level_text_ref = &level_text;
@@ -78,10 +80,7 @@ public:
         // UI State
         _ui_root.update();
 
-        // Keyboard shortcuts
-        if (asw::input::get_action_down("back")) {
-            manager.set_next_scene(GameState::Menu);
-        }
+        // Keyboard and controller shortcuts
         if (asw::input::get_action_down("left")) {
             previous_level();
         }
