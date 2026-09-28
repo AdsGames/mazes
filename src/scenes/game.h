@@ -5,6 +5,7 @@
 #include <cmath>
 #include <ctime>
 #include <format>
+#include <numbers>
 #include <sstream>
 #include <string>
 
@@ -217,7 +218,8 @@ public:
 
         // Draws broom if needed
         if (broom_active) {
-            rotate_sprite(broom, float_pos + asw::Vec2f(10, 10), rotation);
+            rotate_sprite(broom, float_pos + asw::Vec2f(10, 10),
+                static_cast<float>(rotation) * std::numbers::pi_v<float> / 128.0F);
         }
     }
 
