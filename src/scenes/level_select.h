@@ -59,7 +59,8 @@ public:
         level_text.transform.set_position(640, 760);
         _level_text_ref = &level_text;
 
-        // Load sprites
+        _click = asw::assets::load_sample("assets/sfx/click.wav");
+
         // Load tilemap
         _tilemap.load(std::format("assets/levels/level{}.json", GameScene::level));
         _tilemap.setRenderConfig(
@@ -119,7 +120,7 @@ private:
     {
         const auto file_path = std::format("assets/levels/level{}.json", GameScene::level + 1);
         if (_tilemap.load(file_path)) {
-            asw::sound::play(_click);
+            asw::sound::play(_click, { .bus = asw::sound::Bus::Ui });
             GameScene::level++;
         }
     }
@@ -128,7 +129,7 @@ private:
     {
         const auto file_path = std::format("assets/levels/level{}.json", GameScene::level - 1);
         if (_tilemap.load(file_path)) {
-            asw::sound::play(_click);
+            asw::sound::play(_click, { .bus = asw::sound::Bus::Ui });
             GameScene::level--;
         }
     }
