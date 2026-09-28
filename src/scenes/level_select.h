@@ -22,35 +22,41 @@ public:
         // Build UI tree
         _ui_root = asw::ui::Root();
         _ui_root.ctx.theme.font = font;
-        _ui_root.ctx.navigation.back = "back";
+        // Keyboard and controller input is handled in update(), so point the UI's
+        // own navigation at an unbound action. An empty name would fall back to
+        // the arrow keys, Tab and Enter.
+        _ui_root.ctx.navigation = { .up = UNBOUND,
+            .down = UNBOUND,
+            .left = UNBOUND,
+            .right = UNBOUND,
+            .next = UNBOUND,
+            .prev = UNBOUND,
+            .activate = UNBOUND,
+            .back = "back" };
         _ui_root.on_back = [this]() { manager.set_next_scene(GameState::Menu); };
         _ui_root.root.bg_image = asw::assets::load_texture("assets/images/background.png");
 
-        // Setup buttons. They are pointer targets only: left, right and interact
-        // change and play the level directly below.
+        // Setup buttons. They are pointer targets: left, right and interact
+        // change and play the level directly in update().
         auto& btn_left = _ui_root.root.add_child<asw::ui::Button>();
         btn_left.text = "<";
-        btn_left.focusable = false;
         btn_left.transform.set_position(100, 420);
         btn_left.transform.set_size(64, 64);
         btn_left.on_click = [this]() { previous_level(); };
 
         auto& btn_play = _ui_root.root.add_child<asw::ui::Button>();
-        btn_play.focusable = false;
         btn_play.transform.set_position(320, 220);
         btn_play.transform.set_size(640, 480);
         btn_play.on_click = [this]() { manager.set_next_scene(GameState::Game); };
 
         auto& btn_right = _ui_root.root.add_child<asw::ui::Button>();
         btn_right.text = ">";
-        btn_right.focusable = false;
         btn_right.transform.set_position(1280 - 64 - 100, 420);
         btn_right.transform.set_size(64, 64);
         btn_right.on_click = [this]() { next_level(); };
 
         auto& back = _ui_root.root.add_child<asw::ui::Button>();
         back.text = "Back";
-        back.focusable = false;
         back.transform.set_position(40, 856);
         back.transform.set_size(200, 64);
         back.on_click = [this]() { manager.set_next_scene(GameState::Menu); };
@@ -109,6 +115,8 @@ public:
     }
 
 private:
+    static constexpr const char* UNBOUND = "unbound";
+
     asw::ui::Root _ui_root;
     asw::ui::Label* _level_text_ref;
     asw::Sample _click;
